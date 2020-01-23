@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spot Test</title>
+    <script>
+      // Spot Config
+      var spot_data = [ { type: 'web', params: { url: document.location.href } } ];
+
+      // add events to data layer
+      function triggerEvent(evt, params) {
+        spot_data.push({ type: evt || "event", params: params });
+      }
+    </script>
+
+    <!-- Spot Script -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'spot.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://paulabrams.github.io/spot/spot.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','SPOT-000001');</script>
+    <!-- End Spot Script -->
+
+    <!-- make the page look nice -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://v4-alpha.getbootstrap.com/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://v4-alpha.getbootstrap.com/examples/narrow-jumbotron/narrow-jumbotron.css">
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills float-right">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="gtm.html">GTM</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="cust100.html">Inline C100</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="growingtree.html">Inline GT</a>
+            </li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">Spot Test</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Spot Test - Inline (GrowingTree)</h1>
+        <p class="lead">This is a test of Spot using inline code. View page source to see the code.
+          Each button has inline code to add an event to the data layer.
+          Spot detects updates to the data layer and submits EDP Events.
+        </p>
+        <p>
+          <a class="btn btn-lg btn-success" href="#" id="add_to_cart" role="button" onclick="triggerEvent('add to cart', { 'item': 'sammich' })">Add to Cart</a>
+          <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button" onclick="triggerEvent('remove from cart', { 'item': 'sammich' })">Remove from Cart</a>
+          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button" onclick="triggerEvent('cart checkout', { 'item': 'sammich' })">Checkout</a>
+        </p>
+        <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
+        <code>spot_data.push({ type: "web", params: { "my_data: "my test" }})</code>
+      </div>
+    
+    </div>
+  </body>
+</html>
