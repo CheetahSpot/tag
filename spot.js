@@ -134,6 +134,9 @@ function SpotJs () {
       "client": { "identifier": { "id": "", "id_field": "" } },
       "campaign": data.campaign || config.defaultCampaign
     };
+    if (data.params.subtype) {
+      evt.event.subtype = data.params.subtype;
+    }
     evt.client.identifier.id = user.known ? user.ut : user.dt;
     evt.client.identifier.id_field = user.known ? config.dtIdfield : config.utIdField;
     if (Object.keys(data.params).length) {
