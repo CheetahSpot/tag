@@ -3,12 +3,10 @@
   <head>
     <title>Spot Test</title>
     <script>
-      // Spot Config
-      var spot_data = [ { type: 'web', params: { url: document.location.href } } ];
-
-      // add events to data layer
-      function triggerEvent(evt, params) {
-        spot_data.push({ type: evt || "event", params: params });
+      // Spot data layer
+      var spot_data = [ { "type": 'web', "params": { "subtype": "visit", "url": document.location.href } } ];
+      function triggerEvent(eventType, eventParams) {
+        spot_data.push({ "type": eventType, "params": eventParams });
       }
     </script>
 
@@ -58,9 +56,9 @@
           Spot detects updates to the data layer and submits EDP Events.
         </p>
         <p>
-          <a class="btn btn-lg btn-success" href="#" id="add_to_cart" role="button" onclick="triggerEvent('add to cart', { 'item': 'sammich' })">Add to Cart</a>
-          <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button" onclick="triggerEvent('remove from cart', { 'item': 'sammich' })">Remove from Cart</a>
-          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button" onclick="triggerEvent('cart checkout', { 'item': 'sammich' })">Checkout</a>
+          <a class="btn btn-lg btn-success" href="#" id="add_to_cart" role="button" onclick="triggerEvent('cart', { 'subtype': 'add', 'item': 'sammich' })">Add to Cart</a>
+          <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button" onclick="triggerEvent('cart', { 'subtype': 'remove', 'sammich' })">Remove from Cart</a>
+          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button" onclick="triggerEvent('cart', { 'subtype': 'checkout', 'item': 'sammich' })">Checkout</a>
         </p>
         <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
         <code>spot_data.push({ type: "web", params: { "my_data: "my test" }})</code>
