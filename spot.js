@@ -150,7 +150,7 @@ function SpotJs () {
     if (Object.keys(data.update_attributes).length) {
       evt.callback = { "update_attributes": data.update_attributes };
     }
-    log("spotjs.processEvent evt =", evt);
+    log("spotjs.processEvent type =", evt.event.type, " subtype =", evt.event.subtype, " evt =", evt);
     sendEvent(evt);
   }
 
