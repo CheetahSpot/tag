@@ -143,6 +143,7 @@ function SpotJs () {
     Object.apply(data.update_attributes, user.update_attributes);
     if (data.update_attributes.visitor === undefined && user.visitor !== null) {
       data.update_attributes.visitor = user.visitor;
+    }
     if (Object.keys(data.update_attributes).length) {
       evt.callback = { "update_attributes": data.update_attributes };
     }
