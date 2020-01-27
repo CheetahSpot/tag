@@ -5,41 +5,41 @@
 
     <!-- Sample of custom inline code -->
     <script>
-      jQuery(document).ready(function(){ 
+      // Initialize data layer so events can be pushed even before spot.js loads
+      var spot_data = [];
+      // Create a convenience funtion to push events
+      function pushEvent(evt) {
+        spot_data.push(evt);
+      }
+      // Push config to data layer
+      pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } });
+      // Push a web visit event to the data layer
+      pushEvent({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
 
-        // Initialize data layer so events can be pushed even before spot.js loads
-        var spot_data = [];
-        // Create a convenience funtion to push events
-        function pushEvent(evt) {
-          spot_data.push(evt);
+      // Define some events I want to capture
+      var customEvents = {
+        "add_to_cart": { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
+        "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
+        "cart_checkout": { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
+        "signin": { type: "signin", "params": { 'subtype': 'signin', 'email': 'edward@example.com', 'id_field': 'email' } },
+        "signout": { type: "signout" },
+        "optin": { type: "optin" },
+        "optout": { type: "optout" }
+      }
+
+      // Trigger on button click
+      document.addEventListener('click', function (event) {
+        if (!event.target.matches('.btn')) return;
+        event.preventDefault();
+        console.log("button click", e, this);
+        let evt = customEvents[this.id];
+        if (!evt) {
+          evt = { type: this.id };
         }
-        // Push config to data layer
-        pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } });
-        // Push a web visit event to the data layer
-        pushEvent({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
+        pushEvent(evt);
 
-        // Define some events I want to capture
-        var customEvents = {
-          "add_to_cart": { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
-          "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
-          "cart_checkout": { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
-          "signin": { type: "signin", "params": { 'subtype': 'signin', 'email': 'edward@example.com', 'id_field': 'email' } },
-          "signout": { type: "signout" },
-          "optin": { type: "optin" },
-          "optout": { type: "optout" }
-        }
+      }, false);
 
-        // Use some jquery to create triggers for button clicks
-        $('a.btn').click(function customTrigger (e) {
-          console.log("button click", e, this);
-          let evt = customEvents[this.id];
-          if (!evt) {
-            evt = { type: this.id };
-          }
-          pushEvent(evt);
-        });
-
-      });
     </script>
     <!-- End sample code -->
 
