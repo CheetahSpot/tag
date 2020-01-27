@@ -20,8 +20,8 @@ function SpotJs () {
     cookiePrefix: 'spot_',
     dtCookieName: 'spot_dt',
     utCookieName: 'spot_ut',
-    dtAttribute: 'integration5_id', // TODO - update to device_token
-    utAttribute: 'integration6_id', // TODO - update to user_token
+    dtAttribute: 'integration6_id', // TODO - update to device_token
+    utAttribute: 'integration5_id', // TODO - update to user_token
     cookieMaxAge: 60*60*24*365,
     useNavigatorBeacon: false,
     dataLayerId: 'spot_data',
