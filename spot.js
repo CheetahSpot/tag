@@ -20,17 +20,18 @@ function SpotJs () {
     cookiePrefix: 'spot_',
     dtCookieName: 'spot_dt',
     utCookieName: 'spot_ut',
+    dntCookieName: 'spot_dnt',
     dtAttribute: 'integration6_id', // TODO - update to device_token
     utAttribute: 'integration5_id', // TODO - update to user_token
     cookieMaxAge: 60*60*24*365,
     useNavigatorBeacon: false,
     dataLayerId: 'spot_data',
-    defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" },
+    defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
     debug: 1
   };
 
 
-  let user = { dt: null, ut: null, known: null, visitor: null, optIn: null, optOut: null, update_attributes: {} };
+  let user = { dt: null, ut: null, known: null, visitor: null, dnt: 0, update_attributes: {} };
 
   let spotjs = {
     name: "spotjs 0.0.5 "+Math.random().toString(36).substring(7),
@@ -83,27 +84,17 @@ function SpotJs () {
     optIn(); // signin is implict optin
   }
   let signout = function () {
-    if (user.ut !== "OPTOUT") {
-      setCookie(config.utCookieName, "", config);
-    }
+    user.ut = "";
+    setCookie(config.utCookieName, user.ut, config);
   }
 
-  // Allow user to opt/out of tracking
-  let optIn = function () {
-    user.optIn = true;
-    user.optOut = false;
-    if (user.dt === "OPTOUT") {
-      setCookie(config.dtCookieName, "", config);
-    }
-    if (user.ut === "OPTOUT") {
-      setCookie(config.utCookieName, "", config);
-    }
+  // Allow user to optin/out
+  let optIn = function (dnt) {
+    user.dnt = dnt ? 1 : 0;
+    setCookie(config.dntCookieName, user.dnt, config);
   }
   let optOut = function () {
-    user.optIn = false;
-    user.optOut = true;
-    setCookie(config.dtCookieName, "OPTOUT", config);
-    setCookie(config.utCookieName, "OPTOUT", config);
+    optIn(0);
   }
 
   let processDataLayer = function () {
@@ -191,7 +182,14 @@ function SpotJs () {
       evt.callback = { "update_attributes": data.update_attributes };
     }
     log("spotjs.processEvent type =", evt.event.type, " subtype =", evt.event.subtype, " evt =", evt);
-    sendEvent(evt);
+
+    if (user.dnt) {
+      // do not track - do not send events
+      log("spotjs.processEvent exiting dnt=", user.dnt);
+    }
+    else {
+      sendEvent(evt);
+    }
   }
 
   let sendEvent = function (evt) {
@@ -224,19 +222,14 @@ function SpotJs () {
   let processUser = function (data) {
     getTokenCookie("dt", true, data);
     getTokenCookie("ut", false, data);
+    getTokenCookie("dnt", false, data);
     if (user.ut) { // known
       user.known = true;
       user.visitor = null;
-      if (user.ut === "OPTOUT") {
-        user.optOut = true;
-      }
     }
     else { // anonymous
       user.known = false;
       user.visitor = true;
-      if (user.dt === "OPTOUT") {
-        user.optOut = true;
-      }
     }
   }
 
@@ -246,7 +239,7 @@ function SpotJs () {
     let cookieName = config[token+'CookieName'], 
         cookieVal = getCookie(cookieName);
     if (!user[token]) {
-      if (typeof data === "object" && data[token]) {
+      if (typeof data === "object" && data[token] !== undefined) {
         user[token] = data[token];
       }
       else if (cookieVal) {
@@ -288,6 +281,10 @@ function SpotJs () {
   spotjs.applyConfig = applyConfig;
   spotjs.identify = identify;
   spotjs.track = track;
+  spotjs.signin = signin;
+  spotjs.signout = signout;
+  spotjs.optin = optin;
+  spotjs.optout = optout;
 
   // Run init methods and return spotjs object
   initDataLayer();
