@@ -7,10 +7,14 @@
     <script>
       // Initialize data layer so events can be pushed even before spot.js loads
       var spot_data = [];
+      // Create a convenience funtion to push events
+      function pushEvent(evt) {
+        spot_data.push(evt);
+      }
       // Push config to data layer
-      spot_data.push({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } });
+      pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } });
       // Push a web visit event to the data layer
-      spot_data.push({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
+      pushEvent({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
 
       // Define some events I want to capture
       var customEvents = {
@@ -23,16 +27,17 @@
         "optout": { type: "optout" }
       }
 
-      // Create a custom funtion to trigger button clicks
-      $('.btn').click(function customTrigger (e) {
-        console.log("button click", e, this);
-        let evt = customEvents[this.id];
-        if (!evt) {
-          evt = { type: this.id };
-        }
-        spot_data.push(evt);
+      // Use some jquery to create triggers for button clicks
+      $(function() {
+        $('.btn').click(function customTrigger (e) {
+          console.log("button click", e, this);
+          let evt = customEvents[this.id];
+          if (!evt) {
+            evt = { type: this.id };
+          }
+          pushEvent(evt);
+        });
       });
-
     </script>
     <!-- End sample code -->
 
@@ -82,9 +87,9 @@
           Spot detects updates to the data layer and submits EDP Events.
         </p>
         <p>
-          <a class="btn btn-lg btn-info" href="#" id="add_to_cart" role="button">Add to Cart</a>
-          <a class="btn btn-lg btn-default" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
-          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button">Checkout</a>
+          <a class="btn btn-lg btn-primary" href="#" id="add_to_cart" role="button">Add to Cart</a>
+          <a class="btn btn-lg btn-info" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
+          <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
         <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
         <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
