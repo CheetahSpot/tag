@@ -121,7 +121,7 @@ function SpotJs () {
         }
         let configError = validateConfig();
         if (configError) {
-          log("spot.processDataLayer exiting due to config error:", configError);
+          log("spot.processDataLayer exiting due to config error:", configError, config);
           deferredData.push(data);
           continue;
         }
