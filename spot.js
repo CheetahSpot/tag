@@ -20,8 +20,8 @@ function SpotJs () {
     cookiePrefix: 'spot_',
     dtCookieName: 'spot_dt',
     utCookieName: 'spot_ut',
-    dtIdField: 'integration_id', // TODO - use device_id or visitor_id? Also update GTM template.
-    utIdField: 'integration_id', // TODO
+    dtAttribute: 'integration5_id', // TODO - update to device_token
+    utAttribute: 'integration6_id', // TODO - update to user_token
     cookieMaxAge: 60*60*24*365,
     useNavigatorBeacon: false,
     dataLayerId: 'spot_data',
@@ -173,7 +173,7 @@ function SpotJs () {
       evt.event.subtype = data.params.subtype;
     }
     evt.client.identifier.id = user.known ? user.ut : user.dt;
-    evt.client.identifier.id_field = user.known ? config.dtIdfield : config.utIdField;
+    evt.client.identifier.id_field = user.known ? config.dtAttribute : config.utAttribute;
     if (Object.keys(data.params).length) {
       evt.event.params_json = data.params;
     }
