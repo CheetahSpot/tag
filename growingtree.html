@@ -31,7 +31,7 @@
       document.addEventListener('click', function (event) {
         if (event.target.matches('.btn')) {
           event.preventDefault();
-          console.log("button click id =", event.target.id, event.target);
+          console.log("custom button click id =", event.target.id, event.target);
           let evt = customEvents[event.target.id];
           if (!evt) {
             evt = { type: event.target.id };
@@ -95,6 +95,7 @@
         </p>
         <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
         <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
+        <h1>Sign-in and Opt-in</h1>
         <p class="lead">If a user signs in or is otherwise identified, a "match" is made between their anonymous and known records.</p>
         <p>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>

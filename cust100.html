@@ -2,22 +2,52 @@
 <html>
   <head>
     <title>Spot Test</title>
+
+    <!-- Sample of custom inline code -->
     <script>
-      // Spot data layer
-      var spot_data = [
-        { "config": { apiHost: "https://api-cust100.demostellar.com", apiAuth: "Bearer 9d93dd6d82531de07978181313a29978bab3c4c0a3112cbe527e10cd1c3add8d:27ceca09315271167c9c88859fe02965716d7f8d844055eb354dff659cc569d9" } },
-        { "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } }
-        ];
-      function triggerEvent(eventType, eventParams) {
-        spot_data.push({ "type": eventType, "params": eventParams });
+      // Initialize data layer so events can be pushed even before spot.js loads
+      var spot_data = [];
+      // Create a convenience funtion to push events
+      function pushEvent(evt) {
+        spot_data.push(evt);
       }
+      // Push config to data layer
+      pushEvent({ apiHost: "https://api-cust100.demostellar.com", apiAuth: "Bearer 9d93dd6d82531de07978181313a29978bab3c4c0a3112cbe527e10cd1c3add8d:27ceca09315271167c9c88859fe02965716d7f8d844055eb354dff659cc569d9" });
+      // Push a web visit event to the data layer
+      pushEvent({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
+
+      // Define some events I want to capture
+      var customEvents = {
+        "add_to_cart": { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
+        "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
+        "cart_checkout": { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
+        "signin": { type: "signin", "params": { 'subtype': 'signin', 'email': 'edward@example.com', 'id_field': 'email' } },
+        "signout": { type: "signout" },
+        "optin": { type: "optin" },
+        "optout": { type: "optout" }
+      }
+
+      // Trigger on button click
+      document.addEventListener('click', function (event) {
+        if (event.target.matches('.btn')) {
+          event.preventDefault();
+          console.log("custom button click id =", event.target.id, event.target);
+          let evt = customEvents[event.target.id];
+          if (!evt) {
+            evt = { type: event.target.id };
+          }
+          pushEvent(evt);
+        }
+      }, false);
+
     </script>
+    <!-- End sample code -->
 
     <!-- Spot Script -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'spot.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://cheetaspot.github.io/tag/spot.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    'https://cheetahspot.github.io/tag/spot.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','SPOT-000001');</script>
     <!-- End Spot Script -->
 
@@ -59,19 +89,26 @@
           Spot detects updates to the data layer and submits EDP Events.
         </p>
         <p>
-          <a class="btn btn-lg btn-success" href="#" id="add_to_cart" role="button" onclick="triggerEvent('add to cart', { 'item': 'sammich' })">Add to Cart</a>
-          <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button" onclick="triggerEvent('remove from cart', { 'item': 'sammich' })">Remove from Cart</a>
-          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button" onclick="triggerEvent('cart checkout', { 'item': 'sammich' })">Checkout</a>
+          <a class="btn btn-lg btn-primary" href="#" id="add_to_cart" role="button">Add to Cart</a>
+          <a class="btn btn-lg btn-info" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
+          <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
         <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
         <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
+        <h1>Sign-in and Opt-in</h1>
         <p class="lead">If a user signs in or is otherwise identified, a "match" is made between their anonymous and known records.</p>
         <p>
-          <a class="btn btn-lg btn-success" href="#" id="match" role="button" onclick="triggerEvent('match', { 'email': 'edward@example.com' })">Sign in</a>
-          <a class="btn btn-lg btn-primary" href="#" id="unidentify" role="button" onclick="triggerEvent('unidentify')">Sign out</a>
+          <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
+          <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
+        </p>
+        <p class="lead">If a user opts in or opts out, the device token cookie is updated to .</p>
+        <p>
+          <a class="btn btn-lg btn-success" href="#" id="optin" role="button">Opt In</a>
+          <a class="btn btn-lg btn-danger" href="#" id="optout" role="button">Opt Out</a>
         </p>
       </div>
     
     </div>
   </body>
 </html>
+    
