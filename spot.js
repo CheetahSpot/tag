@@ -14,9 +14,9 @@ function SpotJs () {
 
   let config = {
     apiContentType: 'application/json',
-    apiHost: 'https://growingtree.demostellar.com',
+    apiHost: null,
     apiEndpoint: '/edp/api/event',
-    apiAuthorization: 'Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403',
+    apiAuth: null,
     cookiePrefix: 'spot_',
     dtCookieName: 'spot_dt',
     utCookieName: 'spot_ut',
@@ -62,12 +62,33 @@ function SpotJs () {
 
   // Helper function to push user info to the data layer
   let identify = function (user2) {
-    if (typeof user2 === "object") {
-      Object.assign(user, user2);
+    if (typeof user2 !== "object") {
+      log("spotjs.identify existing - user object is required");
+      return;
     }
+    user2.subtype = "identify";
+    Object.assign(user, user2);
     spot.dataLayer.push({ "type": "identify", "params": user2 });
   }
 
+  // Signin/signout known user
+  let signin = function (user2) {
+    if (typeof user2 === "object") {
+      log("spotjs.signin existing - user object is required");
+      return;
+    }
+    user2.subtype = "signin";
+    Object.assign(user, user2);
+    spot.dataLayer.push({ "type": "identify", "params": user2 });
+    optIn(); // signin is implict optin
+  }
+  let signout = function () {
+    if (user.ut !== "OPTOUT") {
+      setCookie(config.utCookieName, "", config);
+    }
+  }
+
+  // Allow user to opt/out of tracking
   let optIn = function () {
     user.optIn = true;
     user.optOut = false;
@@ -78,7 +99,6 @@ function SpotJs () {
       setCookie(config.utCookieName, "", config);
     }
   }
-  
   let optOut = function () {
     user.optIn = false;
     user.optOut = true;
@@ -91,17 +111,21 @@ function SpotJs () {
     if (spotjs.dataLayer) {
       while (spotjs.dataLayer.length) {
         let data = spotjs.dataLayer.shift();
-        if (typeof data !== "object") {
+        if (typeof data !== "object" || !data) {
           log("spotjs.processDataLayer skipping non-object item", data)
+          continue;
+        }
+        if (data.config && typeof data.config === "object") {
+          applyConfig(data.config);
+        }
+        let configError = validateConfig();
+        if (configError) {
+          log("spot.processDataLayer exiting due to config error:", configError);
+          spotjs.dataLayer.push(data);
           return;
         }
-        if (data) {
-          if (data.config && typeof data.config === "object") {
-            applyConfig(data.config);
-          }
-          if (data.type) {
-            processEvent(data);
-          }
+        if (data.type) {
+          processEvent(data);
         }
       }
     }
@@ -116,6 +140,17 @@ function SpotJs () {
       config.utCookieName = config.cookiePrefix+'ut';
       log("spotjs.applyConfig config =", config);
     }
+  }
+
+  // Validate the current config
+  let validateConfig = function () {
+    if (!config.apiHost) {
+      return "error: apiHost is required";
+    }
+    else if (!config.apiAuth) {
+      return "error: apiAuth is required";
+    }
+    return false; // no errors = valid
   }
 
   // Process a business event, such as a page visit, add to cart, etc.
@@ -174,7 +209,7 @@ function SpotJs () {
       });
       xhr.open("POST", config.apiHost+config.apiEndpoint, true);
       xhr.setRequestHeader("Content-Type", config.apiContentType);
-      xhr.setRequestHeader("Authorization", config.apiAuthorization);
+      xhr.setRequestHeader("Authorization", config.apiAuth);
       // TODO - update sent status in async callbacks
       //spotjs.sent[evtId].status = "done";
       xhr.send(data);

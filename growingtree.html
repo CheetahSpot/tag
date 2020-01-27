@@ -4,9 +4,30 @@
     <title>Spot Test</title>
     <script>
       // Spot data layer
-      var spot_data = [ { "type": 'web', "params": { "subtype": "visit", "url": document.location.href } } ];
+      var spot_data = [
+        { "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } },
+        { "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } }
+
       function triggerEvent(eventType, eventParams) {
         spot_data.push({ "type": eventType, "params": eventParams });
+      }
+
+      var clickEvents = {
+        "add_to_cart": { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
+        "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
+        "cart_checkout": { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
+        "signin": { type: "signin", "params": { 'subtype': 'signin', 'email': 'edward@example.com' } },
+        "signout": { type: "signout" },
+        "optin": { type: "optin" },
+        "optout": { type: "optout" }
+      }
+
+      $('.btn').click(function (e) {
+        console.log("button click", e, this);
+        let evt = clickEvents[this.id];
+        if (evt) {
+          spot_data.push(evt);
+        }
       }
     </script>
 
@@ -56,12 +77,22 @@
           Spot detects updates to the data layer and submits EDP Events.
         </p>
         <p>
-          <a class="btn btn-lg btn-success" href="#" id="add_to_cart" role="button" onclick="triggerEvent('cart', { 'subtype': 'add', 'item': 'sammich' })">Add to Cart</a>
-          <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button" onclick="triggerEvent('cart', { 'subtype': 'remove', 'sammich' })">Remove from Cart</a>
-          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button" onclick="triggerEvent('cart', { 'subtype': 'checkout', 'item': 'sammich' })">Checkout</a>
+          <a class="btn btn-lg btn-success" href="#" id="add_to_cart" role="button">Add to Cart</a>
+          <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
+          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
         <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
-        <code>spot_data.push({ type: "web", params: { "my_data: "my test" }})</code>
+        <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
+        <p class="lead">If a user signs in or is otherwise identified, a "match" is made between their anonymous and known records.</p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="#" id="signin" role="button" onclick="">Sign in</a>
+          <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
+        </p>
+        <p class="lead">If a user opts in or opts out, the device token cookie is updated to .</p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="#" id="optin" role="button">Opt In</a>
+          <a class="btn btn-lg btn-warning" href="#" id="optout" role="button">Opt Out</a>
+        </p>
       </div>
     
     </div>
