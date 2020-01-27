@@ -31,10 +31,10 @@
       document.addEventListener('click', function (event) {
         if (event.target.matches('.btn')) {
           event.preventDefault();
-          console.log("button click", event, this);
-          let evt = customEvents[this.id];
+          console.log("button click id =", event.target.id, event.target);
+          let evt = customEvents[event.target.id];
           if (!evt) {
-            evt = { type: this.id };
+            evt = { type: event.target.id };
           }
           pushEvent(evt);
         }
