@@ -29,15 +29,15 @@
 
       // Trigger on button click
       document.addEventListener('click', function (event) {
-        if (!event.target.matches('.btn')) return;
-        event.preventDefault();
-        console.log("button click", event, this);
-        let evt = customEvents[this.id];
-        if (!evt) {
-          evt = { type: this.id };
+        if (event.target.matches('.btn')) {
+          event.preventDefault();
+          console.log("button click", event, this);
+          let evt = customEvents[this.id];
+          if (!evt) {
+            evt = { type: this.id };
+          }
+          pushEvent(evt);
         }
-        pushEvent(evt);
-
       }, false);
 
     </script>
