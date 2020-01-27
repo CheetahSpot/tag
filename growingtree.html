@@ -5,7 +5,7 @@
 
     <!-- Sample of custom inline code -->
     <script>
-      $(document).ready(function() {
+      jQuery(document).ready(function(){ 
 
         // Initialize data layer so events can be pushed even before spot.js loads
         var spot_data = [];
@@ -30,7 +30,7 @@
         }
 
         // Use some jquery to create triggers for button clicks
-        $('.btn').click(function customTrigger (e) {
+        $('a.btn').click(function customTrigger (e) {
           console.log("button click", e, this);
           let evt = customEvents[this.id];
           if (!evt) {
