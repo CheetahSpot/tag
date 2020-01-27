@@ -109,6 +109,7 @@ function SpotJs () {
   let processDataLayer = function () {
     log("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer))
     if (spotjs.dataLayer) {
+      let deferredData = [];
       while (spotjs.dataLayer.length) {
         let data = spotjs.dataLayer.shift();
         if (typeof data !== "object" || !data) {
@@ -121,12 +122,16 @@ function SpotJs () {
         let configError = validateConfig();
         if (configError) {
           log("spot.processDataLayer exiting due to config error:", configError);
-          spotjs.dataLayer.push(data);
-          return;
+          deferredData.push(data);
+          continue;
         }
         if (data.type) {
           processEvent(data);
         }
+      }
+      // Put deferred items back on the queue
+      while (deferredData.length) {
+        spotjs.dataLayer.push(deferredData.shift());
       }
     }
   }
