@@ -4,11 +4,12 @@
 
 function SpotJs () {
 
+  //@public tag config
   let config = {
-    apiContentType: 'application/json',
+    apiAuth: null,
     apiHost: null,
     apiEndpoint: '/edp/api/event',
-    apiAuth: null,
+    apiContentType: 'application/json',
     cookiePrefix: 'spot_',
     dtCookieName: 'spot_dt',
     utCookieName: 'spot_ut',
@@ -22,8 +23,10 @@ function SpotJs () {
     debug: 1
   };
 
+  // @public user object
   let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, update_attributes: {} };
 
+  // @public return object
   let spotjs = {
     name: "spotjs 0.0.6 "+Math.random().toString(36).substring(7),
     config: config,
@@ -120,9 +123,9 @@ function SpotJs () {
         }
       }
       // Put deferred items back on the queue
-      while (deferredData.length) {
-        spotjs.dataLayer.push(deferredData.shift());
-      }
+      //while (deferredData.length) {
+        //spotjs.dataLayer.push(deferredData.shift());
+      //}
     }
   }
 
