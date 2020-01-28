@@ -59,7 +59,7 @@ function SpotJs () {
   }
 
   // @public signin
-  let signin = spotjs.signin = function (user2) {
+  let signIn = spotjs.signin = function (user2) {
     if (typeof user2 === "object") {
       log("spotjs.signin existing - user object is required");
       return;
@@ -70,7 +70,7 @@ function SpotJs () {
   }
   
   // @public Signout
-  let signout = spotjs.signout = function () {
+  let signOut = spotjs.signout = function () {
     // clear user token
     user.ut = "";
     setCookie(config.utCookieName, user.ut, config);
@@ -123,16 +123,19 @@ function SpotJs () {
         if (data.type) {
           switch (data.type) {
             case "signin":
-              signin();
+              signIn(data.params);
               break;
             case "signout":
-              signout();
+              signOut();
               break;
             case "optin":
-              optin();
+              setOptin(true);
               break;
             case "optout":
-              optin();
+              setOptin(false);
+              break;
+            case "dnt":
+              setDnt(true);
               break;
             default:
               processEvent(data);
