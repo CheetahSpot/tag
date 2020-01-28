@@ -192,7 +192,13 @@ function SpotJs () {
       evt.event.subtype = data.params.subtype;
     }
     evt.client.identifier.id = user.known ? user.ut : user.dt;
-    evt.client.identifier.id_field = user.known ? config.dtAttribute : config.utAttribute;
+    if (user.id_field && user[user.id_field]) {
+      evt.client.identifier.id_field = user.id_field;
+      evt.client.identifier.id = user[user.id_field];
+    }
+    else {
+      evt.client.identifier.id_field = user.known ? config.dtAttribute : config.utAttribute;
+    }
     if (Object.keys(data.params).length) {
       //evt.event.params = data.params;
       evt.event.params_json = data.params;
