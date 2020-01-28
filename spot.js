@@ -257,7 +257,7 @@ function SpotJs () {
     log("spotjs.setUser user2 =", JSON.stringify(user2));
     Object.assign(spotjs.user, user2);
     processUser(spotjs.user);
-    let params = Object.assign({ subtype: 'user' }), spotjs.user);
+    let params = Object.assign({ subtype: 'user' }, spotjs.user);
     spotjs.dataLayer.push({ "type": "identify", "params": params });
   }
 
