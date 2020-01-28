@@ -47,13 +47,12 @@ function SpotJs () {
   }
 
   // @public identify
-  // Helper function to push user info to the data layer
   let identify = spotjs.identify = function (user2) {
     if (typeof user2 !== "object") {
       log("spotjs.identify existing - user object is required");
       return;
     }
-    user2.subtype = "identify";
+    user2.subtype = user2.subtype || "identify";
     Object.assign(user, user2);
     spotjs.dataLayer.push({ "type": "identify", "params": user2 });
   }
@@ -66,8 +65,7 @@ function SpotJs () {
       return;
     }
     user2.subtype = user2.subtype || "signin";
-    Object.assign(user, user2);
-    spotjs.dataLayer.push({ "type": "identify", "params": user2 });
+    spotjs.identify(user2);
   }
   
   // @public Signout
