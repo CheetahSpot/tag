@@ -9,19 +9,21 @@ function SpotJs () {
   let config = {
     apiAuth: null,
     apiHost: null,
+    defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
+    dtAttr: 'integration6_id', // TODO - update to device_token
+    utAttr: 'integration5_id', // TODO - update to user_token
+    cookieMaxAge: 60*60*24*365, // 1y
     apiEndpoint: '/edp/api/event',
     apiContentType: 'application/json',
+    userParam: 'spot_user',
+    dataLayerId: 'spot_data',
     cookiePrefix: 'spot_',
     dtCookieName: 'spot_dt',
     utCookieName: 'spot_ut',
     dntCookieName: 'spot_dnt',
-    dt_atr: 'integration6_id', // TODO - update to device_token
-    ut_atr: 'integration5_id', // TODO - update to user_token
-    cookieMaxAge: 60*60*24*365, // 1y
+    dtAttrCookieName: 'spot_da', 
+    utAttrCookieName: 'spot_ua', 
     useNavigatorBeacon: false,
-    userParam: 'spot_user',
-    dataLayerId: 'spot_data',
-    defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
     debug: 1
   };
 
@@ -190,7 +192,7 @@ function SpotJs () {
       evt.client.identifier.id = user[user.id_field];
     }
     else {
-      evt.client.identifier.id_field = user.known ? user.dt_atr : user.ut_atr;
+      evt.client.identifier.id_field = user.known ? user.dtAttr : user.utAttr;
     }
     if (Object.keys(data.params).length) {
       //evt.event.params = data.params;
@@ -265,10 +267,10 @@ function SpotJs () {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
-    user.dt_atr = user.dt_atr || config.dt_atr;
-    user.ut_atr = user.ut_atr || config.ut_atr;
-    getUserCookie("dt_atr", config.dt_atr, data);
-    getUserCookie("ut_atr", config.ut_atr, data);
+    user.dtAttr = user.dtAttr || config.dtAttr;
+    user.utAttr = user.utAttr || config.utAttr;
+    getUserCookie("dtAttr", config.dtAttr, data);
+    getUserCookie("utAttr", config.utAttr, data);
     if (user.ut) { // knowt
       user.known = true;
       user.visitor = null;
