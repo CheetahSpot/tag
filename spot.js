@@ -30,8 +30,7 @@ function SpotJs () {
     debug: 1
   };
 
-
-  let user = { dt: null, ut: null, known: null, visitor: null, dnt: 0, update_attributes: {} };
+  let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, update_attributes: {} };
 
   let spotjs = {
     name: "spotjs 0.0.5 "+Math.random().toString(36).substring(7),
@@ -42,7 +41,55 @@ function SpotJs () {
   };
 
   // log wrapper
-  let log = spotjs.log = config.debug ? console.log.bind(window.console) : function(){};
+  let log = config.debug ? console.log.bind(window.console) : function(){};
+
+  // @public track
+  // Helper function to push an event to the data layer
+  let track = spotjs.track = function (eventType, params) {
+    spot.dataLayer.push({ "type": eventType, "params": params });
+  }
+
+  // @public identify
+  // Helper function to push user info to the data layer
+  let identify = spotjs.identify = function (user2) {
+    if (typeof user2 !== "object") {
+      log("spotjs.identify existing - user object is required");
+      return;
+    }
+    user2.subtype = "identify";
+    Object.assign(user, user2);
+    spot.dataLayer.push({ "type": "identify", "params": user2 });
+  }
+
+  // @public signin
+  let signin = spotjs.signin = function (user2) {
+    if (typeof user2 === "object") {
+      log("spotjs.signin existing - user object is required");
+      return;
+    }
+    user2.subtype = "signin";
+    Object.assign(user, user2);
+    spot.dataLayer.push({ "type": "identify", "params": user2 });
+  }
+  
+  // @public Signout
+  let signout = spotjs.signout = function () {
+    // clear user token
+    user.ut = "";
+    setCookie(config.utCookieName, user.ut, config);
+  }
+
+  // @public setOptin
+  let setOptin = spotjs.setOptin = function (optin) {
+    user.optin = optin ? true : false;
+    setDnt(optin ? 0 : 1);
+  }
+
+  // @public setDnt
+  let setDnt = spotjs.setDnt = function (dnt) {
+    user.dnt = dnt;
+    setCookie(config.dntCookieName, dnt, config);
+  }
 
   // Init Data Layer
   let initDataLayer = function () {
@@ -56,47 +103,7 @@ function SpotJs () {
     }
   }
 
-  // Helper function to push an event to the data layer
-  let track = function (eventType, params) {
-    spot.dataLayer.push({ "type": eventType, "params": params });
-  }
-
-  // Helper function to push user info to the data layer
-  let identify = function (user2) {
-    if (typeof user2 !== "object") {
-      log("spotjs.identify existing - user object is required");
-      return;
-    }
-    user2.subtype = "identify";
-    Object.assign(user, user2);
-    spot.dataLayer.push({ "type": "identify", "params": user2 });
-  }
-
-  // Signin/signout known user
-  let signin = function (user2) {
-    if (typeof user2 === "object") {
-      log("spotjs.signin existing - user object is required");
-      return;
-    }
-    user2.subtype = "signin";
-    Object.assign(user, user2);
-    spot.dataLayer.push({ "type": "identify", "params": user2 });
-    optIn(); // signin is implict optin
-  }
-  let signout = function () {
-    user.ut = "";
-    setCookie(config.utCookieName, user.ut, config);
-  }
-
-  // Allow user to optin/out
-  let optIn = function (dnt) {
-    user.dnt = dnt ? 1 : 0;
-    setCookie(config.dntCookieName, user.dnt, config);
-  }
-  let optOut = function () {
-    optIn(0);
-  }
-
+  // Process data layer array
   let processDataLayer = function () {
     log("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer))
     if (spotjs.dataLayer) {
@@ -108,7 +115,7 @@ function SpotJs () {
           continue;
         }
         if (data.config && typeof data.config === "object") {
-          applyConfig(data.config);
+          setConfig(data.config);
         }
         let configError = validateConfig();
         if (configError) {
@@ -127,14 +134,15 @@ function SpotJs () {
     }
   }
 
-  // Allow the tag to provide config, such as API details.
-  let applyConfig = function (config2) {
+  // Set config, such as API details
+  let setConfig = function (config2) {
     if (typeof config2 === "object") {
-      log("spotjs.applyConfig config2 =", JSON.stringify(config2));
+      log("spotjs.setConfig config2 =", JSON.stringify(config2));
       Object.assign(config, config2);
       config.dtCookieName = config.cookiePrefix+'dt';
       config.utCookieName = config.cookiePrefix+'ut';
-      log("spotjs.applyConfig config =", config);
+      config.dntCookieName = config.cookiePrefix+'dnt';
+      log("spotjs.setConfig config =", config);
     }
   }
 
@@ -183,13 +191,12 @@ function SpotJs () {
     }
     log("spotjs.processEvent type =", evt.event.type, " subtype =", evt.event.subtype, " evt =", evt);
 
-    if (user.dnt) {
+    if (user.dnt === 1) {
       // do not track - do not send events
-      log("spotjs.processEvent exiting dnt=", user.dnt);
+      log("dnt enabled, abort sending event");
+      return;
     }
-    else {
-      sendEvent(evt);
-    }
+    sendEvent(evt);
   }
 
   let sendEvent = function (evt) {
@@ -200,12 +207,12 @@ function SpotJs () {
     if (config.useNavigatorBeacon && navigator.sendBeacon) {
       let blob = new Blob(data, { "type": "application/json" });
       navigator.sendBeacon(config.apiHost + config.apiEndpoint, blob);
-      spotjs.sent[evtId].status = "done";
     }
     else {
       let xhr = new XMLHttpRequest();
       xhr.withCredentials = true;
       xhr.addEventListener("readystatechange", function() {
+        spotjs.sent[evtId].readyState = this.readyState;
         if(this.readyState === 4) {
           //log(this.responseText, this);
         }
@@ -213,16 +220,15 @@ function SpotJs () {
       xhr.open("POST", config.apiHost+config.apiEndpoint, true);
       xhr.setRequestHeader("Content-Type", config.apiContentType);
       xhr.setRequestHeader("Authorization", config.apiAuth);
-      // TODO - update sent status in async callbacks
-      //spotjs.sent[evtId].status = "done";
       xhr.send(data);
     }
   }
 
+  // User management
   let processUser = function (data) {
-    getTokenCookie("dt", true, data);
-    getTokenCookie("ut", false, data);
-    getTokenCookie("dnt", false, data);
+    getUserCookie("dt", "generate", data);
+    getUserCookie("ut", "", data);
+    getUserCookie("dnt", null, data);
     if (user.ut) { // known
       user.known = true;
       user.visitor = null;
@@ -233,25 +239,22 @@ function SpotJs () {
     }
   }
 
-
-  // Utils
-  let getTokenCookie = function (token, generate, data) {
-    let cookieName = config[token+'CookieName'], 
+  let getUserCookie = function (key, defaultValue, data) {
+    let cookieName = config[key+'CookieName'], 
         cookieVal = getCookie(cookieName);
-    if (!user[token]) {
-      if (typeof data === "object" && data[token] !== undefined) {
-        user[token] = data[token];
+    if (!user[key]) {
+      if (typeof data === "object" && data[key] !== undefined) {
+        user[key] = data[key];
       }
       else if (cookieVal) {
-        user[token] = cookieVal;
+        user[key] = cookieVal;
       }
-      if (!user[token] && generate) {
-        // generate token
-        user[token] = uuidv4();
+      if (!user[key] && defaultValue === "generate") {
+        user[key] = uuidv4();
       }
     }
-    if (user[token] !== cookieVal) {
-      setCookie(cookieName, user[token], config);
+    if (user[key] !== cookieVal) {
+      setCookie(cookieName, user[key], config);
     }
   }
 
@@ -276,15 +279,6 @@ function SpotJs () {
       return v.toString(16);
     });
   }
-
-  // Interface methods
-  spotjs.applyConfig = applyConfig;
-  spotjs.identify = identify;
-  spotjs.track = track;
-  spotjs.signin = signin;
-  spotjs.signout = signout;
-  spotjs.optin = optin;
-  spotjs.optout = optout;
 
   // Run init methods and return spotjs object
   initDataLayer();
