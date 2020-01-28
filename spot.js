@@ -176,7 +176,7 @@ function SpotJs () {
     evt.client.identifier.id = user.known ? user.ut : user.dt;
     evt.client.identifier.id_field = user.known ? config.dtAttribute : config.utAttribute;
     if (Object.keys(data.params).length) {
-      evt.event.params_json = data.params;
+      evt.event.params_json = JSON.stringify(data.params);
     }
     data.update_attributes = data.update_attributes || {};
     Object.apply(data.update_attributes, user.update_attributes);
