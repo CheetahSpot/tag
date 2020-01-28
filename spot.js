@@ -32,7 +32,8 @@ function SpotJs () {
     config: config,
     user: user,
     dataLayer: null,
-    sent: []
+    sentEvents: [],
+    pendingEvents: []
   };
 
   // log wrapper
@@ -102,7 +103,7 @@ function SpotJs () {
   let processDataLayer = function () {
     log("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer))
     if (spotjs.dataLayer) {
-      spotjs.deferredEvents = [];
+      spotjs.pendingEvents = [];
       while (spotjs.dataLayer.length) {
         let data = spotjs.dataLayer.shift();
         if (typeof data !== "object" || !data) {
@@ -115,7 +116,7 @@ function SpotJs () {
         let configError = validateConfig();
         if (configError) {
           log("spot.processDataLayer exiting due to config error:", configError, config);
-          spotjs.deferredEvents.push(data);
+          spotjs.pendingEvents.push(data);
           continue;
         }
         if (data.type) {
@@ -134,9 +135,9 @@ function SpotJs () {
       config.utCookieName = config.cookiePrefix+'ut';
       config.dntCookieName = config.cookiePrefix+'dnt';
       log("spotjs.setConfig config =", config);
-      // Process deferredEvents events
-      while (spotjs.deferredEvents.length) {
-        spotjs.dataLayer.push(spotjs.deferredEvents.shift());
+      // Process pending events
+      while (spotjs.pendingEvents.length) {
+        spotjs.dataLayer.push(spotjs.pendingEvents.shift());
       }
     }
   }
