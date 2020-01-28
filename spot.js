@@ -190,7 +190,7 @@ function SpotJs () {
       evt.client.identifier.id = user[user.id_field];
     }
     else {
-      evt.client.identifier.id_field = user.known ? config.dtAttribute : config.utAttribute;
+      evt.client.identifier.id_field = user.known ? user.dtAttribute : user.utAttribute;
     }
     if (Object.keys(data.params).length) {
       //evt.event.params = data.params;
@@ -265,6 +265,8 @@ function SpotJs () {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
+    user.dtAttribute = user.dtAttribute || config.dtAttribute;
+    user.utAttribute = user.utAttribute || config.utAttribute;
     getUserCookie("dtAttribute", config.dtAttribute, data);
     getUserCookie("utAttribute", config.utAttribute, data);
     if (user.ut) { // knowt
