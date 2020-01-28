@@ -60,11 +60,12 @@ function SpotJs () {
 
   // @public signin
   let signIn = spotjs.signin = function (user2) {
+    log("spotjs.signin", user2);
     if (typeof user2 === "object") {
       log("spotjs.signin existing - user object is required");
       return;
     }
-    user2.subtype = "signin";
+    user2.subtype = user2.subtype || "signin";
     Object.assign(user, user2);
     spot.dataLayer.push({ "type": "identify", "params": user2 });
   }
@@ -102,7 +103,7 @@ function SpotJs () {
 
   // Process data layer array
   let processDataLayer = function () {
-    log("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer))
+    log("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer));
     if (spotjs.dataLayer) {
       spotjs.pendingEvents = [];
       while (spotjs.dataLayer.length) {
