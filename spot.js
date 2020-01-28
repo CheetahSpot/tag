@@ -1,15 +1,7 @@
 /**
- * Spot.js
- *
- *  Spot.js is a web tracker tag
- *
- *  Spot observes window.spot_data array
- *
+ * Spot Web Tag
  */
 
-//
-// Implementation
-//
 function SpotJs () {
 
   let config = {
@@ -33,7 +25,7 @@ function SpotJs () {
   let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, update_attributes: {} };
 
   let spotjs = {
-    name: "spotjs 0.0.5 "+Math.random().toString(36).substring(7),
+    name: "spotjs 0.0.6 "+Math.random().toString(36).substring(7),
     config: config,
     user: user,
     dataLayer: null,
