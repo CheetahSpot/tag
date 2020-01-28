@@ -43,7 +43,7 @@ function SpotJs () {
   // @public track
   // Helper function to push an event to the data layer
   let track = spotjs.track = function (eventType, params) {
-    spot.dataLayer.push({ "type": eventType, "params": params });
+    spotjs.dataLayer.push({ "type": eventType, "params": params });
   }
 
   // @public identify
@@ -55,7 +55,7 @@ function SpotJs () {
     }
     user2.subtype = "identify";
     Object.assign(user, user2);
-    spot.dataLayer.push({ "type": "identify", "params": user2 });
+    spotjs.dataLayer.push({ "type": "identify", "params": user2 });
   }
 
   // @public signin
@@ -67,7 +67,7 @@ function SpotJs () {
     }
     user2.subtype = user2.subtype || "signin";
     Object.assign(user, user2);
-    spot.dataLayer.push({ "type": "identify", "params": user2 });
+    spotjs.dataLayer.push({ "type": "identify", "params": user2 });
   }
   
   // @public Signout
@@ -117,7 +117,7 @@ function SpotJs () {
         }
         let configError = validateConfig();
         if (configError) {
-          log("spot.processDataLayer exiting due to config error:", configError, config);
+          log("spotjs.processDataLayer exiting due to config error:", configError, config);
           spotjs.pendingEvents.push(data);
           continue;
         }
