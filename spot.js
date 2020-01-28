@@ -121,7 +121,22 @@ function SpotJs () {
           continue;
         }
         if (data.type) {
-          processEvent(data);
+          switch (data.type) {
+            case "signin":
+              signin();
+              break;
+            case "signout":
+              signout();
+              break;
+            case "optin":
+              optin();
+              break;
+            case "optout":
+              optin();
+              break;
+            default:
+              processEvent(data);
+          }
         }
       }
     }
