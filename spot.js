@@ -16,7 +16,7 @@ function SpotJs () {
     dntCookieName: 'spot_dnt',
     dtAttribute: 'integration6_id', // TODO - update to device_token
     utAttribute: 'integration5_id', // TODO - update to user_token
-    cookieMaxAge: 60*60*24*365,
+    cookieMaxAge: 60*60*24*365, // 1y
     useNavigatorBeacon: false,
     dataLayerId: 'spot_data',
     defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
