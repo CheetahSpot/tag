@@ -3,6 +3,7 @@
  */
 
 function SpotJs () {
+  let version = "0.0.7";
 
   //@public tag config
   let config = {
@@ -28,7 +29,7 @@ function SpotJs () {
 
   // @public return object
   let spotjs = {
-    name: "spotjs 0.0.6 "+Math.random().toString(36).substring(7),
+    name: "spotjs "+version+" "+Math.random().toString(36).substring(4),
     config: config,
     user: user,
     dataLayer: null,
@@ -221,7 +222,7 @@ function SpotJs () {
 
   // User management
   let processUser = function (data) {
-    getUserCookie("dt", "generate", data);
+    getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
     if (user.ut) { // known
@@ -244,7 +245,7 @@ function SpotJs () {
       else if (cookieVal) {
         user[key] = cookieVal;
       }
-      if (!user[key] && defaultValue === "generate") {
+      if (!user[key] && defaultValue === "{uuidv4}") {
         user[key] = uuidv4();
       }
     }
