@@ -102,7 +102,7 @@ function SpotJs () {
   let processDataLayer = function () {
     log("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer))
     if (spotjs.dataLayer) {
-      let deferredData = [];
+      spotjs.deferredEvents = [];
       while (spotjs.dataLayer.length) {
         let data = spotjs.dataLayer.shift();
         if (typeof data !== "object" || !data) {
@@ -115,17 +115,13 @@ function SpotJs () {
         let configError = validateConfig();
         if (configError) {
           log("spot.processDataLayer exiting due to config error:", configError, config);
-          deferredData.push(data);
+          spotjs.deferredEvents.push(data);
           continue;
         }
         if (data.type) {
           processEvent(data);
         }
       }
-      // Put deferred items back on the queue
-      //while (deferredData.length) {
-        //spotjs.dataLayer.push(deferredData.shift());
-      //}
     }
   }
 
@@ -138,6 +134,10 @@ function SpotJs () {
       config.utCookieName = config.cookiePrefix+'ut';
       config.dntCookieName = config.cookiePrefix+'dnt';
       log("spotjs.setConfig config =", config);
+      // Process deferredEvents events
+      while (spotjs.deferredEvents.length) {
+        spotjs.dataLayer.push(spotjs.deferredEvents.shift());
+      }
     }
   }
 
@@ -201,12 +201,12 @@ function SpotJs () {
       navigator.sendBeacon(config.apiHost + config.apiEndpoint, blob);
     }
     else {
-      let evtId = "event-"+spotjs.sent.length;
-      spotjs.sent[evtId] = { "evt": evt, "readyState": null };
+      let evtId = "event-"+spotjs.sentEvents.length;
+      spotjs.sentEvents[evtId] = { "evt": evt, "readyState": null };
       let xhr = new XMLHttpRequest();
       xhr.withCredentials = true;
       xhr.addEventListener("readystatechange", function() {
-        spotjs.sent[evtId].readyState = this.readyState;
+        spotjs.sentEvents[evtId].readyState = this.readyState;
         if(this.readyState === 4) {
           log("spotjs.sendEvent evtId =", evtId, " response =", this.responseText, this);
         }
