@@ -61,7 +61,7 @@ function SpotJs () {
   // @public signin
   let signIn = spotjs.signin = function (user2) {
     log("spotjs.signin", user2);
-    if (typeof user2 === "object") {
+    if (typeof user2 !== "object") {
       log("spotjs.signin existing - user object is required");
       return;
     }
@@ -148,17 +148,18 @@ function SpotJs () {
 
   // Set config, such as API details
   let setConfig = function (config2) {
-    if (typeof config2 === "object") {
-      log("spotjs.setConfig config2 =", JSON.stringify(config2));
-      Object.assign(config, config2);
-      config.dtCookieName = config.cookiePrefix+'dt';
-      config.utCookieName = config.cookiePrefix+'ut';
-      config.dntCookieName = config.cookiePrefix+'dnt';
-      log("spotjs.setConfig config =", config);
-      // Process pending events
-      while (spotjs.pendingEvents.length) {
-        spotjs.dataLayer.push(spotjs.pendingEvents.shift());
-      }
+    if (typeof config2 !== "object") {
+      log("spotjs.setConfig error - config object is required");
+    {
+    log("spotjs.setConfig config2 =", JSON.stringify(config2));
+    Object.assign(config, config2);
+    config.dtCookieName = config.cookiePrefix+'dt';
+    config.utCookieName = config.cookiePrefix+'ut';
+    config.dntCookieName = config.cookiePrefix+'dnt';
+    log("spotjs.setConfig config =", config);
+    // Process pending events
+    while (spotjs.pendingEvents.length) {
+      spotjs.dataLayer.push(spotjs.pendingEvents.shift());
     }
   }
 
