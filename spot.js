@@ -280,7 +280,7 @@ function SpotJs () {
   }
 
   let getUserCookie = function (key, defaultValue, data) {
-    let cookieName = config[key+'CookieName'], 
+    let cookieName = config[key+'CookieName'] || (config.cookiePrefix+key), 
         cookieVal = getCookie(cookieName);
     if (!user[key]) {
       if (typeof data === "object" && data[key] !== undefined) {
