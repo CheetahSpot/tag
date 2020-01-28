@@ -291,7 +291,8 @@ function SpotJs () {
         user[key] = uuidv4();
       }
     }
-    if (user[key] !== cookieVal) {
+    let cookieVal2 = user[key];
+    if (cookieVal2 !== cookieVal) {
       setCookie(cookieName, cookieVal2, config);
     }
   }
