@@ -19,6 +19,7 @@ function SpotJs () {
     utAttribute: 'integration5_id', // TODO - update to user_token
     cookieMaxAge: 60*60*24*365, // 1y
     useNavigatorBeacon: false,
+    userParam: 'spot_user',
     dataLayerId: 'spot_data',
     defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
     debug: 1
@@ -46,17 +47,6 @@ function SpotJs () {
     spotjs.dataLayer.push({ "type": eventType, "params": params });
   }
 
-  // @public identify
-  let identify = spotjs.identify = function (user2) {
-    if (typeof user2 !== "object") {
-      log("spotjs.identify existing - user object is required");
-      return;
-    }
-    user2.subtype = user2.subtype || "identify";
-    Object.assign(user, user2);
-    spotjs.dataLayer.push({ "type": "identify", "params": user2 });
-  }
-
   // @public signin
   let signIn = spotjs.signin = function (user2) {
     log("spotjs.signin", user2);
@@ -65,7 +55,7 @@ function SpotJs () {
       return;
     }
     user2.subtype = user2.subtype || "signin";
-    spotjs.identify(user2);
+    spotjs.setUser(user2);
   }
   
   // @public Signout
@@ -113,6 +103,9 @@ function SpotJs () {
         if (data.config && typeof data.config === "object") {
           setConfig(data.config);
         }
+        if (data.user && typeof data.user === "object") {
+          setUser(data.user);
+        }
         let configError = validateConfig();
         if (configError) {
           log("spotjs.processDataLayer exiting due to config error:", configError, config);
@@ -144,8 +137,8 @@ function SpotJs () {
     }
   }
 
-  // Set config, such as API details
-  let setConfig = function (config2) {
+  // @public setConfig
+  let setConfig = spotjs.setConfig = function (config2) {
     if (typeof config2 !== "object") {
       log("spotjs.setConfig error - config object is required");
     }
@@ -245,11 +238,35 @@ function SpotJs () {
     }
   }
 
-  // User management
+
+  // Load the user from querystring or inline variable
+  let loadUser = function () {
+    if (typeof window[config.userParam] !== undefined) {
+      setUser(window[config.userParam]);
+    }
+    else if (location.search.indexOf("spot_user") !== -1) {
+      setUser(JSON.decode(getParam("spot_user", true)));
+    }
+  }
+
+  // @public setUser
+  let setUser = spotjs.setUser = function (user2) {
+    if (typeof user2 !== "object") {
+      log("spotjs.setUser error - user object is required");
+    }
+    log("spotjs.setUser user2 =", JSON.stringify(user2));
+    Object.assign(spotjs.user, user2);
+    processUser(spotjs.user);
+    let params = Object.assign({ subtype: 'user' }), spotjs.user);
+    spotjs.dataLayer.push({ "type": "identify", "params": params });
+  }
+
   let processUser = function (data) {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
+    getUserCookie("dtIdField", null, data);
+    getUserCookie("utIdField", null, data);
     if (user.ut) { // known
       user.known = true;
       user.visitor = null;
@@ -275,7 +292,7 @@ function SpotJs () {
       }
     }
     if (user[key] !== cookieVal) {
-      setCookie(cookieName, user[key], config);
+      setCookie(cookieName, cookieVal2, config);
     }
   }
 
@@ -294,6 +311,16 @@ function SpotJs () {
     log("spotjs.setCookie c=", c);
   }
 
+  function getParam(name, url) {
+    if (!url) { url = window.location.href; }
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
   let uuidv4 = function () {
    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -303,6 +330,7 @@ function SpotJs () {
 
   // Run init methods and return spotjs object
   initDataLayer();
+  loadUser();
 
   log(spotjs.name, "created");
   return spotjs;
