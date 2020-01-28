@@ -15,8 +15,8 @@ function SpotJs () {
     dtCookieName: 'spot_dt',
     utCookieName: 'spot_ut',
     dntCookieName: 'spot_dnt',
-    dtAttribute: 'integration6_id', // TODO - update to device_token
-    utAttribute: 'integration5_id', // TODO - update to user_token
+    dt_atr: 'integration6_id', // TODO - update to device_token
+    ut_atr: 'integration5_id', // TODO - update to user_token
     cookieMaxAge: 60*60*24*365, // 1y
     useNavigatorBeacon: false,
     userParam: 'spot_user',
@@ -190,7 +190,7 @@ function SpotJs () {
       evt.client.identifier.id = user[user.id_field];
     }
     else {
-      evt.client.identifier.id_field = user.known ? user.dtAttribute : user.utAttribute;
+      evt.client.identifier.id_field = user.known ? user.dt_atr : user.ut_atr;
     }
     if (Object.keys(data.params).length) {
       //evt.event.params = data.params;
@@ -265,10 +265,10 @@ function SpotJs () {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
-    user.dtAttribute = user.dtAttribute || config.dtAttribute;
-    user.utAttribute = user.utAttribute || config.utAttribute;
-    getUserCookie("dtAttribute", config.dtAttribute, data);
-    getUserCookie("utAttribute", config.utAttribute, data);
+    user.dt_atr = user.dt_atr || config.dt_atr;
+    user.ut_atr = user.ut_atr || config.ut_atr;
+    getUserCookie("dt_atr", config.dt_atr, data);
+    getUserCookie("ut_atr", config.ut_atr, data);
     if (user.ut) { // knowt
       user.known = true;
       user.visitor = null;
