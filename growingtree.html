@@ -84,8 +84,17 @@
 
       <div class="jumbotron">
         <h1>Spot Test - Inline (GrowingTree)</h1>
-        <p class="lead">This is a test of Spot using inline code. View page source to see the code.
-          Each button has inline code to add an event to the data layer.
+        <p class="lead">This is a test of Spot using inline code.
+        View page source to see the code.
+        <br><br>
+        The first event is pushed on page visit:</p>
+        <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Cart</h1>
+        <p class="lead">Click buttons to trigger events to test abandoned cart.
+          Each button pushes an event onto the data layer.
           Spot detects updates to the data layer and submits EDP Events.
         </p>
         <p>
@@ -93,8 +102,6 @@
           <a class="btn btn-lg btn-info" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
           <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
-        <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
-        <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
       </div>
 
       <div class="jumbotron">
