@@ -265,9 +265,9 @@ function SpotJs () {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
-    getUserCookie("dtIdField", null, data);
-    getUserCookie("utIdField", null, data);
-    if (user.ut) { // known
+    getUserCookie("dtAttribute", config.dtAttribute, data);
+    getUserCookie("utAttribute", config.utAttribute, data);
+    if (user.ut) { // knowt
       user.known = true;
       user.visitor = null;
     }
