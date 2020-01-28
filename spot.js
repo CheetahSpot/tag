@@ -203,7 +203,7 @@ function SpotJs () {
     let evtId = spotjs.sent.length+1;
     let data = JSON.stringify(evt);
     log("spotjs.sendEvent evt =", evt);
-    spotjs.sent[evtId] = { "status": "sent", "evt": evt };
+    spotjs.sent[evtId] = { "evt": evt, "readyState": null };
     if (config.useNavigatorBeacon && navigator.sendBeacon) {
       let blob = new Blob(data, { "type": "application/json" });
       navigator.sendBeacon(config.apiHost + config.apiEndpoint, blob);
