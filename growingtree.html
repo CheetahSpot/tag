@@ -95,16 +95,23 @@
         </p>
         <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
         <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
-        <h1>Sign-in and Opt-in</h1>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Sign-in</h1>
         <p class="lead">If a user signs in or is otherwise identified, a "match" is made between their anonymous and known records.</p>
         <p>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
-        <p class="lead">If a user opts in or opts out, the device token cookie is updated to .</p>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Opt-in</h1>
+        <p class="lead">If a user opts in or opts out, a "do not track" cookie is set.</p>
         <p>
           <a class="btn btn-lg btn-success" href="#" id="optin" role="button">Opt In</a>
-          <a class="btn btn-lg btn-danger" href="#" id="optout" role="button">Opt Out</a>
+          <a class="btn btn-lg btn-warning" href="#" id="optout" role="button">Opt Out</a>
         </p>
       </div>
     
