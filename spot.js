@@ -150,7 +150,7 @@ function SpotJs () {
   let setConfig = function (config2) {
     if (typeof config2 !== "object") {
       log("spotjs.setConfig error - config object is required");
-    {
+    }
     log("spotjs.setConfig config2 =", JSON.stringify(config2));
     Object.assign(config, config2);
     config.dtCookieName = config.cookiePrefix+'dt';
