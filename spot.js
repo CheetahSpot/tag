@@ -131,9 +131,11 @@ function SpotJs () {
           switch (data.type) {
             case "identify":
               identify(data.params, true);
+              processEvent(data);
               break;
             case "signin":
               signIn(data.params, true);
+              processEvent(data);
               break;
             case "signout":
               signOut();
