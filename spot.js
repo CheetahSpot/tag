@@ -28,7 +28,7 @@ function SpotJs () {
   };
 
   // @public user object
-  let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, update_attributes: {} };
+  let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, identified: false, update_attributes: {} };
 
   // @public return object
   let spotjs = {
@@ -50,12 +50,12 @@ function SpotJs () {
   }
 
   // @public identify
-  let identify = spotjs.identify = function (user2) {
+  let identify = spotjs.identify = function (user2, skipEvent) {
     if (typeof user2 !== "object") {
       log("spotjs.identify error - user object is required", user2);
       return false;
     }
-    if (setUser(user2)) {
+    if (setUser(user2) && !skipEvent) {
       let params = { subtype: 'identify' };
       Object.assign(params, spotjs.user);
       spotjs.dataLayer.push({ "type": "identify", "params": params });
@@ -63,14 +63,14 @@ function SpotJs () {
   }
 
   // @public signin
-  let signIn = spotjs.signin = function (user2) {
+  let signIn = spotjs.signin = function (user2, skipEvent) {
     log("spotjs.signin", user2);
     if (typeof user2 !== "object") {
       log("spotjs.signin existing - user object is required");
       return;
     }
     user2.subtype = user2.subtype || "signin";
-    spotjs.identify(user2);
+    spotjs.identify(user2, skipEvent);
   }
   
   // @public Signout
@@ -130,10 +130,10 @@ function SpotJs () {
         if (data.type) {
           switch (data.type) {
             case "identify":
-              identify(data.params);
+              identify(data.params, true);
               break;
             case "signin":
-              signIn(data.params);
+              signIn(data.params, true);
               break;
             case "signout":
               signOut();
