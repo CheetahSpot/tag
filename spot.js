@@ -56,6 +56,8 @@ function SpotJs () {
       return false;
     }
     user2.subtype = user2.subtype || "identify";
+    user2.dt = user2.dt || user.dt;
+    user2.dtAttr = user2.dtAttr || user.dtAttr;
     setUser(user2);
     if (!skipEvent) {
       let params = { subtype: 'identify' };
@@ -129,12 +131,10 @@ function SpotJs () {
           switch (data.type) {
             case "identify":
               identify(data.params, true);
-              data.params = user;
               processEvent(data);
               break;
             case "signin":
               signIn(data.params, true);
-              data.params = user;
               processEvent(data);
               break;
             case "signout":
