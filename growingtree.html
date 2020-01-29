@@ -21,8 +21,8 @@
         "add_to_cart":      { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
         "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
         "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
-        "user":             { type: "user", "params": { 'ut': 'INT00001', 'utField': 'integration_id', 'visitor': false, 'dnt': false } },
-        "signin":           { type: "signin", "params": { 'subtype': 'signin', 'ut': 'INT00001', 'utAttr': 'integration_id' } },
+        "identify":         { type: "identify", "params": { 'ut': 'INT00001', 'utAttr': 'integration_id', 'visitor': false, 'dnt': false } },
+        "signin":           { type: "signin", "params": { 'ut': 'INT00002', 'utAttr': 'integration_id' } },
         "signout":          { type: "signout" },
         "optin":            { type: "optin" },
         "optout":           { type: "optout" }
