@@ -55,7 +55,9 @@ function SpotJs () {
       log("spotjs.identify error - user object is required", user2);
       return false;
     }
-    if (setUser(user2) && !skipEvent) {
+    user2.subtype = user2.subtype || "identify";
+    setUser(user2);
+    if (!skipEvent) {
       let params = { subtype: 'identify' };
       Object.assign(params, spotjs.user);
       spotjs.dataLayer.push({ "type": "identify", "params": params });
@@ -64,7 +66,6 @@ function SpotJs () {
 
   // @public signin
   let signIn = spotjs.signin = function (user2, skipEvent) {
-    log("spotjs.signin", user2);
     if (typeof user2 !== "object") {
       log("spotjs.signin existing - user object is required");
       return;
@@ -118,9 +119,6 @@ function SpotJs () {
         if (data.config && typeof data.config === "object") {
           setConfig(data.config);
         }
-        if (data.user && typeof data.user === "object") {
-          setUser(data.user);
-        }
         let configError = validateConfig();
         if (configError) {
           log("spotjs.processDataLayer exiting due to config error:", configError, config);
@@ -131,10 +129,12 @@ function SpotJs () {
           switch (data.type) {
             case "identify":
               identify(data.params, true);
+              data.params = user;
               processEvent(data);
               break;
             case "signin":
               signIn(data.params, true);
+              data.params = user;
               processEvent(data);
               break;
             case "signout":
