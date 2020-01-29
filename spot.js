@@ -173,6 +173,7 @@ function SpotJs () {
     if (!data.type) {
       log("spotjs.processEvent error - data.type is required");
     }
+    data.params = data.params || {};
     processUser(data);
     if (!data.iso_time) {
       let dateobj = new Date();
@@ -183,7 +184,7 @@ function SpotJs () {
       "client": { "identifier": { "id": "", "id_field": "" } },
       "campaign": data.campaign || config.defaultCampaign
     };
-    if (data.params && data.params.subtype) {
+    if (data.params.subtype) {
       evt.event.subtype = data.params.subtype;
     }
     evt.client.identifier.id = user.known ? user.ut : user.dt;
