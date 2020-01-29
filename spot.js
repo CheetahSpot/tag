@@ -12,17 +12,12 @@ function SpotJs () {
     defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
     dtAttr: 'integration6_id', // TODO - update to device_token
     utAttr: 'integration5_id', // TODO - update to user_token
-    cookieMaxAge: 60*60*24*365, // 1y
     apiEndpoint: '/edp/api/event',
     apiContentType: 'application/json',
     userParam: 'spot_user',
     dataLayerId: 'spot_data',
     cookiePrefix: 'spot_',
-    dtCookieName: 'spot_dt',
-    utCookieName: 'spot_ut',
-    dntCookieName: 'spot_dnt',
-    dtAttrCookieName: 'spot_da', 
-    utAttrCookieName: 'spot_ua', 
+    cookieMaxAge: 60*60*24*365, // 1y
     useNavigatorBeacon: false,
     debug: 1
   };
@@ -81,19 +76,15 @@ function SpotJs () {
   let signOut = spotjs.signout = function () {
     // clear user token
     user.ut = "";
-    setCookie(config.utCookieName, user.ut, config);
+    setCookie("ut", user.ut);
   }
 
   // @public setOptin
   let setOptin = spotjs.setOptin = function (optin) {
     user.optin = optin ? 1 : 0;
-    setDnt(user.optin);
-  }
-
-  // @public setDnt
-  let setDnt = spotjs.setDnt = function (dnt) {
-    user.dnt = dnt ? 1 : 0;
-    setCookie(config.dntCookieName, user.dnt, config);
+    setCookie("optin", user.optin);
+    user.dnt = user.optin ? 0 : 1;
+    setCookie("dnt", user.dnt);
   }
 
   // Init Data Layer
@@ -146,9 +137,6 @@ function SpotJs () {
             case "optout":
               setOptin(false);
               break;
-            case "dnt":
-              setDnt(1);
-              break;
             default:
               processEvent(data);
           }
@@ -162,11 +150,7 @@ function SpotJs () {
     if (typeof config2 !== "object") {
       log("spotjs.setConfig error - config object is required");
     }
-    log("spotjs.setConfig config2 =", JSON.stringify(config2));
     Object.assign(config, config2);
-    config.dtCookieName = config.cookiePrefix+'dt';
-    config.utCookieName = config.cookiePrefix+'ut';
-    config.dntCookieName = config.cookiePrefix+'dnt';
     log("spotjs.setConfig config =", config);
     // Process pending events
     while (spotjs.pendingEvents.length) {
@@ -307,8 +291,8 @@ function SpotJs () {
   }
 
   let getUserCookie = function (key, defaultValue, data) {
-    let cookieName = config[key+'CookieName'] || (config.cookiePrefix+key), 
-        cookieVal = getCookie(cookieName);
+    let cookieName = config.cookiePrefix,
+        cokieVal = getCookie(cookieName);
     if (user[key] === undefined || user[key] === null) {
       if (typeof data === "object" && data[key] !== undefined) {
         user[key] = data[key];
@@ -327,16 +311,16 @@ function SpotJs () {
     }
     let cookieVal2 = user[key];
     if (cookieVal2 !== undefined && cookieVal2 !== cookieVal) {
-      setCookie(cookieName, cookieVal2, config);
+      setCookie(cookieName, cookieVal2);
     }
   }
 
   let getCookie = function (name) {
-    var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    var v = document.cookie.match('(^|;) ?'+name+'=([^;]*)(;|$)');
     return v ? v[2] : null;
   }
 
-  let setCookie = function (name, value, options) {
+  let setCookie = function (name, value) {
     let c = name+'='+value;
     c += '; SameSite=None';
     c += '; Secure=true';
