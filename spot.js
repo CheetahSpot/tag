@@ -265,7 +265,7 @@ function SpotJs () {
     user.utAttr = user.utAttr || config.utAttr;
     getUserCookie("dtAttr", config.dtAttr, data);
     getUserCookie("utAttr", config.utAttr, data);
-    if (user.ut) { // knowt
+    if (user.ut) { // known
       user.known = true;
       user.visitor = null;
     }
