@@ -51,6 +51,10 @@ function SpotJs () {
 
   // @public identify
   let identify = spotjs.identify = function (user2) {
+    if (typeof user2 !== "object") {
+      log("spotjs.identify error - user object is required", user2);
+      return false;
+    }
     if (setUser(user2)) {
       let params = Object.assign({ subtype: 'user' }, spotjs.user);
       spotjs.dataLayer.push({ "type": "identify", "params": params });
@@ -127,7 +131,7 @@ function SpotJs () {
             case "identify":
             case "user":
             case "signin":
-              setUser(data.params, false);
+              setUser(data.params);
               break;
             case "signout":
               signOut();
@@ -258,9 +262,9 @@ function SpotJs () {
   }
 
   // setUser
-  let setUser = function (user2, submitEvent) {
+  let setUser = function (user2) {
     if (typeof user2 !== "object") {
-      log("spotjs.setUser error - user object is required");
+      log("spotjs.setUser error - user object is required", user2);
       return false;
     }
     log("spotjs.setUser user2 =", JSON.stringify(user2));
