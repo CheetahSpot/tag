@@ -262,8 +262,6 @@ function SpotJs () {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
-    user.dtAttr = user.dtAttr || config.dtAttr;
-    user.utAttr = user.utAttr || config.utAttr;
     getUserCookie("dtAttr", config.dtAttr, data);
     getUserCookie("utAttr", config.utAttr, data);
     if (user.ut) { // known
@@ -286,8 +284,13 @@ function SpotJs () {
       else if (cookieVal) {
         user[key] = cookieVal;
       }
-      if (!user[key] && defaultValue === "{uuidv4}") {
-        user[key] = uuidv4();
+      if (!user[key] && defaultValue) {
+        if (defaultValue === "{uuidv4}") {
+          user[key] = uuidv4();
+        }
+        else {
+          user[key] = defaultValue;
+        }
       }
     }
     let cookieVal2 = user[key];
