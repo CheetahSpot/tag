@@ -117,19 +117,17 @@
 
       <div class="jumbotron">
         <h1>Managing User Consent</h1>
-        <p class="lead">Spot supports user consent to tracking.
-        Tracking is enabled by default.
-        An optin or optout Event out sets a Do Not Track cookie "spot_dnt". 
-        Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".
-        If Do Not Track is enabled (dnt=1) no Events will be sent to the server (even the optout Event is blocked). 
-        Optin/optout does not affect other cookies. 
+        <p class="lead">
+        Spot supports user consent to tracking, using a "Do Not Track" cookie.
         </p>
-        <dl>
-          <dt><a class="btn btn-lg btn-success" href="#" id="optin" role="button">Optin</a></dt>
-          <dd><code>Event { type: "optin" }</code></dd>
-          <dt><a class="btn btn-lg btn-warning" href="#" id="optout" role="button">Optout</a></dt>
-          <dd><code> Event { type: "optout" }</code></dd>
-        </dl>
+        <p>
+          <a class="btn btn-lg btn-success" href="#" id="optin" role="button">Optin</a>
+          <a class="btn btn-lg btn-warning" href="#" id="optout" role="button">Optout</a>
+        </p>
+        <p>
+        Tracking is enabled by default.
+        An optin or optout Event out sets a Do Not Track cookie "spot_dnt".  Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".  </p>
+        <p> If Do Not Track is enabled (dnt=1) then Events are blocked and not sent to the server (even the optout Event is blocked).  Optin/optout does not affect other cookies.  </p>
       </div>
     
     </div>
