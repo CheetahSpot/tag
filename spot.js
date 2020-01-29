@@ -262,9 +262,12 @@ function SpotJs () {
       user2 = window[config.userParam];
       log("spotjs.detectUser window.user2 = ", user2);
     }
-    if (!user2 && location.search.indexOf(config.userParam) !== -1) {
-      user2 = JSON.decode(getParam(config.userParam, true));
-      log("spotjs.detectUser ?"+config.userParam+" = ", user2);
+    if (!user2) {
+      let param = getParam(config.userParam);
+        if (param) {
+        user2 = JSON.parse(param);
+        log("spotjs.detectUser ?"+config.userParam+" = ", user2);
+      }
     }
     if (user2) {
       log("spotjs.detectUser identity user2 = ", user2);
