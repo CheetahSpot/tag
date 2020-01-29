@@ -58,6 +58,7 @@ function SpotJs () {
     user2.subtype = user2.subtype || "identify";
     user2.dt = user2.dt || user.dt;
     user2.dtAttr = user2.dtAttr || user.dtAttr;
+    user2.dnt = user2.dnt ? 1 : 0;
     setUser(user2);
     if (!skipEvent) {
       let params = { subtype: 'identify' };
