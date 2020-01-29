@@ -85,6 +85,7 @@ function SpotJs () {
     setCookie("optin", user.optin);
     user.dnt = user.optin ? 0 : 1;
     setCookie("dnt", user.dnt);
+    // TODO - decide if this should also clear spot_ut cookie
   }
 
   // Init Data Layer
@@ -292,7 +293,7 @@ function SpotJs () {
 
   let getUserCookie = function (key, defaultValue, data) {
     let cookieName = config.cookiePrefix,
-        cokieVal = getCookie(cookieName);
+        cookieVal = getCookie(cookieName);
     if (user[key] === undefined || user[key] === null) {
       if (typeof data === "object" && data[key] !== undefined) {
         user[key] = data[key];
