@@ -49,6 +49,14 @@ function SpotJs () {
     spotjs.dataLayer.push({ "type": eventType, "params": params });
   }
 
+  // @public identify
+  let identify = spotjs.identify = function (user2) {
+    if (setUser(user2)) {
+      let params = Object.assign({ subtype: 'user' }, spotjs.user);
+      spotjs.dataLayer.push({ "type": "identify", "params": params });
+    }
+  }
+
   // @public signin
   let signIn = spotjs.signin = function (user2) {
     log("spotjs.signin", user2);
@@ -57,7 +65,7 @@ function SpotJs () {
       return;
     }
     user2.subtype = user2.subtype || "signin";
-    spotjs.setUser(user2);
+    spotjs.identify(user2);
   }
   
   // @public Signout
@@ -116,8 +124,10 @@ function SpotJs () {
         }
         if (data.type) {
           switch (data.type) {
+            case "identify":
+            case "user":
             case "signin":
-              signIn(data.params);
+              setUser(data.params, false);
               break;
             case "signout":
               signOut();
@@ -239,23 +249,23 @@ function SpotJs () {
   // Load the user from querystring or inline variable
   let loadUser = function () {
     if (typeof window[config.userParam] !== undefined) {
-      setUser(window[config.userParam]);
+      identify(window[config.userParam], true);
     }
     else if (location.search.indexOf("spot_user") !== -1) {
-      setUser(JSON.decode(getParam("spot_user", true)));
+      identify(JSON.decode(getParam("spot_user", true)), true);
     }
   }
 
-  // @public setUser
-  let setUser = spotjs.setUser = function (user2) {
+  // setUser
+  let setUser = function (user2, submitEvent) {
     if (typeof user2 !== "object") {
       log("spotjs.setUser error - user object is required");
+      return false;
     }
     log("spotjs.setUser user2 =", JSON.stringify(user2));
     Object.assign(spotjs.user, user2);
     processUser(spotjs.user);
-    let params = Object.assign({ subtype: 'user' }, spotjs.user);
-    spotjs.dataLayer.push({ "type": "identify", "params": params });
+    return true;
   }
 
   let processUser = function (data) {
