@@ -183,7 +183,7 @@ function SpotJs () {
       "client": { "identifier": { "id": "", "id_field": "" } },
       "campaign": data.campaign || config.defaultCampaign
     };
-    if (data.params.subtype) {
+    if (data.params && data.params.subtype) {
       evt.event.subtype = data.params.subtype;
     }
     evt.client.identifier.id = user.known ? user.ut : user.dt;
