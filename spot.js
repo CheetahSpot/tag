@@ -214,7 +214,7 @@ function SpotJs () {
     }
     data.update_attributes = data.update_attributes || {};
     Object.apply(data.update_attributes, user.update_attributes);
-    if (data.update_attributes.visitor === undefined && user.visitor !== null) {
+    if (data.update_attributes.visitor === "undefined" && user.visitor !== null) {
       data.update_attributes.visitor = user.visitor;
     }
     if (Object.keys(data.update_attributes).length) {
@@ -258,11 +258,11 @@ function SpotJs () {
   // Load the user from querystring or inline variable
   let detectUser = function () {
     let user2 = null;
-    if (typeof window[config.userParam] !== undefined) {
+    if (typeof window[config.userParam] !== "undefined") {
       user2 = window[config.userParam];
       log("spotjs.detectUser window.user2 = ", user2);
     }
-    else if (location.search.indexOf(config.userParam) !== -1) {
+    if (!user2 && location.search.indexOf(config.userParam) !== -1) {
       user2 = JSON.decode(getParam(config.userParam, true));
       log("spotjs.detectUser ?"+config.userParam+" = ", user2);
     }
@@ -304,7 +304,7 @@ function SpotJs () {
     let cookieName = config[key+'CookieName'] || (config.cookiePrefix+key), 
         cookieVal = getCookie(cookieName);
     if (!user[key]) {
-      if (typeof data === "object" && data[key] !== undefined) {
+      if (typeof data === "object" && data[key] !== "undefined") {
         user[key] = data[key];
       }
       else if (cookieVal) {
