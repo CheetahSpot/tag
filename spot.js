@@ -260,11 +260,14 @@ function SpotJs () {
     let user2 = null;
     if (typeof window[config.userParam] !== undefined) {
       user2 = window[config.userParam];
+      log("spotjs.detectUser window.user2 = ", user2);
     }
     else if (location.search.indexOf("spot_user") !== -1) {
       user2 = JSON.decode(getParam("spot_user", true));
+      log("spotjs.detectUser ?user2 = ", user2);
     }
     if (user2) {
+      log("spotjs.detectUser identity user2 = ", user2);
       identify(user2);
     }
   }
