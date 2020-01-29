@@ -264,7 +264,10 @@ function SpotJs () {
     }
     if (!user2) {
       let param = getParam(config.userParam);
-        if (param) {
+      if (param) {
+        if (param.indexOf("{") !== 0) {
+          param = atob(param);
+        }
         user2 = JSON.parse(param);
         log("spotjs.detectUser ?"+config.userParam+" = ", user2);
       }
