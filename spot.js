@@ -56,7 +56,8 @@ function SpotJs () {
       return false;
     }
     if (setUser(user2)) {
-      let params = Object.assign({ subtype: 'user' }, spotjs.user);
+      let params = { subtype: 'identify' };
+      Object.assign(params, spotjs.user);
       spotjs.dataLayer.push({ "type": "identify", "params": params });
     }
   }
@@ -129,9 +130,10 @@ function SpotJs () {
         if (data.type) {
           switch (data.type) {
             case "identify":
-            case "user":
+              identify(data.params);
+              break;
             case "signin":
-              setUser(data.params);
+              signIn(data.params);
               break;
             case "signout":
               signOut();
@@ -252,12 +254,16 @@ function SpotJs () {
 
 
   // Load the user from querystring or inline variable
-  let loadUser = function () {
+  let detectUser = function () {
+    let user2 = null;
     if (typeof window[config.userParam] !== undefined) {
-      identify(window[config.userParam], true);
+      user2 = window[config.userParam];
     }
     else if (location.search.indexOf("spot_user") !== -1) {
-      identify(JSON.decode(getParam("spot_user", true)), true);
+      user2 = JSON.decode(getParam("spot_user", true));
+    }
+    if (user2) {
+      identify(user2);
     }
   }
 
@@ -346,9 +352,10 @@ function SpotJs () {
     });
   }
 
-  // Run init methods and return spotjs object
+  // Detect a user context prior to processing any data layer events
+  detectUser();
+  // Init the data layer only after detecting the user
   initDataLayer();
-  loadUser();
 
   log(spotjs.name, "created");
   return spotjs;
