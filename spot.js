@@ -28,7 +28,7 @@ function SpotJs () {
   };
 
   // @public user object
-  let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, identified: false, update_attributes: {} };
+  let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, update_attributes: {} };
 
   // @public return object
   let spotjs = {
@@ -305,7 +305,7 @@ function SpotJs () {
   let getUserCookie = function (key, defaultValue, data) {
     let cookieName = config[key+'CookieName'] || (config.cookiePrefix+key), 
         cookieVal = getCookie(cookieName);
-    if (typeof user[key] === undefined || user[key] === null) {
+    if (user[key] === undefined || user[key] === null) {
       if (typeof data === "object" && data[key] !== undefined) {
         user[key] = data[key];
       }
