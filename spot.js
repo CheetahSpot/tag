@@ -244,7 +244,7 @@ function SpotJs () {
       xhr.addEventListener("readystatechange", function() {
         spotjs.sentEvents[evtId].readyState = this.readyState;
         if(this.readyState === 4) {
-          log("spotjs.sendEvent evtId =", evtId, " response =", this.responseText, this);
+          log("spotjs.sendEvent evtId =", evtId, " response =", this.responseText, " evt=", spotjs.sentEvents[evtId]);
         }
       });
       xhr.open("POST", config.apiHost+config.apiEndpoint, true);
