@@ -103,7 +103,6 @@ function SpotJs () {
         Array.prototype.push.call(spotjs.dataLayer, e);
         processDataLayer();
       };
-      processDataLayer();
     }
   }
 
@@ -360,10 +359,12 @@ function SpotJs () {
     });
   }
 
-  // Detect a user context prior to processing any data layer events
-  detectUser();
-  // Init the data layer only after detecting the user
+  // Init the array of events to process
   initDataLayer();
+  // Detect user state prior to processing any events
+  detectUser();
+  // Finally, process any existing events
+  processDataLayer();
 
   log(spotjs.name, "created");
   return spotjs;
