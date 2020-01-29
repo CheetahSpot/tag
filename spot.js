@@ -78,7 +78,7 @@ function SpotJs () {
   // @public setOptin
   let setOptin = spotjs.setOptin = function (optin) {
     user.optin = optin ? true : false;
-    setDnt(optin ? 0 : 1);
+    setDnt(user.optin);
   }
 
   // @public setDnt
@@ -213,7 +213,7 @@ function SpotJs () {
     }
     log("spotjs.processEvent type =", evt.event.type, " subtype =", evt.event.subtype, " evt =", evt);
 
-    if (user.dnt === 1) {
+    if (user.dnt) {
       // do not track - do not send events
       log("dnt enabled, abort sending event");
       return;
