@@ -77,14 +77,14 @@ function SpotJs () {
 
   // @public setOptin
   let setOptin = spotjs.setOptin = function (optin) {
-    user.optin = optin ? true : false;
+    user.optin = optin ? 1 : 0;
     setDnt(user.optin);
   }
 
   // @public setDnt
   let setDnt = spotjs.setDnt = function (dnt) {
-    user.dnt = dnt;
-    setCookie(config.dntCookieName, dnt, config);
+    user.dnt = dnt ? 1 : 0;
+    setCookie(config.dntCookieName, user.dnt, config);
   }
 
   // Init Data Layer
@@ -139,7 +139,7 @@ function SpotJs () {
               setOptin(false);
               break;
             case "dnt":
-              setDnt(true);
+              setDnt(1);
               break;
             default:
               processEvent(data);
@@ -199,6 +199,7 @@ function SpotJs () {
     }
     evt.client.identifier.id = user.known ? user.ut : user.dt;
     evt.client.identifier.id_field = user.known ? user.utAttr : user.dtAttr;
+    evt.client.identifier.known = user.known;
     if (Object.keys(data.params).length) {
       //evt.event.params = data.params;
       evt.event.params_json = data.params;
@@ -213,7 +214,7 @@ function SpotJs () {
     }
     log("spotjs.processEvent type =", evt.event.type, " subtype =", evt.event.subtype, " evt =", evt);
 
-    if (user.dnt) {
+    if (user.dnt === 1) {
       // do not track - do not send events
       log("dnt enabled, abort sending event");
       return;
