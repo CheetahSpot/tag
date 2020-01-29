@@ -3,7 +3,7 @@
  */
 
 function SpotJs () {
-  let version = "0.0.8";
+  let version = "0.0.9";
 
   //@public tag config
   let config = {
@@ -213,7 +213,7 @@ function SpotJs () {
     }
     data.update_attributes = data.update_attributes || {};
     Object.apply(data.update_attributes, user.update_attributes);
-    if (data.update_attributes.visitor === "undefined" && user.visitor !== null) {
+    if (data.update_attributes.visitor === undefined && user.visitor !== null) {
       data.update_attributes.visitor = user.visitor;
     }
     if (Object.keys(data.update_attributes).length) {
@@ -305,8 +305,8 @@ function SpotJs () {
   let getUserCookie = function (key, defaultValue, data) {
     let cookieName = config[key+'CookieName'] || (config.cookiePrefix+key), 
         cookieVal = getCookie(cookieName);
-    if (typeof user[key] === "undefined" || user[key] === null) {
-      if (typeof data === "object" && data[key] !== "undefined") {
+    if (typeof user[key] === undefined || user[key] === null) {
+      if (typeof data === "object" && data[key] !== undefined) {
         user[key] = data[key];
       }
       else if (cookieVal) {
@@ -322,7 +322,7 @@ function SpotJs () {
       }
     }
     let cookieVal2 = user[key];
-    if (cookieVal2 !== cookieVal) {
+    if (cookieVal2 !== undefined && cookieVal2 !== cookieVal) {
       setCookie(cookieName, cookieVal2, config);
     }
   }
