@@ -19,6 +19,11 @@ function SpotJs () {
     cookiePrefix: 'spot_',
     cookieMaxAge: 60*60*24*365, // 1y
     useNavigatorBeacon: false,
+    knownEventParams: {
+      "subtype": "event_subtype",
+      "url": "",
+      "referrer: "" }
+  }
     debug: 1
   };
 
@@ -170,6 +175,7 @@ function SpotJs () {
     return send;
   }
 
+
   // Process a business event, such as a page visit, add to cart, etc.
   let processEvent = function (data) {
     let send = preprocessEvent(data);
@@ -192,12 +198,19 @@ function SpotJs () {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
     }
-    // Event JSON Params
-    if (data.params && Object.keys(data.params).length) {
-      evt.event.params_json = data.params;
-      if (data.params.subtype) {
-        evt.event.subtype = data.params.subtype;
+    // Copy known params to top-level Object, and submit others as params_json
+    if (typeof data.params === "object") {
+      evt.event.params_json = {};
+      for (const key of Object.keys(data.params)) {
+        if (knownEventParams[key] !== undefined) {
+          evt.event[key] = data.params[key];
+        }
+        else {
+          // unknown event params are in params_json
+          evt.event.params_json[key] = data.params[key];
+        }
       }
+      if (Object.keys(evt.event.params_json).length === 0) { delete evt.event.params_json; }
     }
     // Update attributes
     let update_attributes = data.update_attributes || {};
