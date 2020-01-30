@@ -246,19 +246,19 @@ function SpotJs () {
     else {
       let evtId = "event-"+spotjs.sentEvents.length;
       let xhr = new XMLHttpRequest();
-      spotjs.sentEvents[evtId] = { "evt": evt, "readyState": null, "xhr": xhr };
       xhr.withCredentials = true;
-      xhr.addEventListener("readystatechange", function() {
-        spotjs.sentEvents[evtId].readyState = this.readyState;
-        if(this.readyState === 4) {
-          log("spotjs", evtId, "response", this.responseText);
-        }
-      });
       xhr.open("POST", config.apiHost+config.apiEndpoint, true);
       xhr.setRequestHeader("Content-Type", config.apiContentType);
       xhr.setRequestHeader("Authorization", config.apiAuth);
+      xhr.addEventListener("readystatechange", function() {
+        spotjs.sentEvents[evtId].readyState = this.readyState;
+        if(this.readyState === 4) {
+          log("spotjs", evtId, "received response =", this.responseText);
+        }
+      });
       let xhrBody = JSON.stringify(evt);
-      log("spotjs", evtId, "request", xhrBody);
+      spotjs.sentEvents[evtId] = { "evt": evt, "readyState": null, "xhr": xhr };
+      log("spotjs", evtId, "sending request =", xhrBody);
       xhr.send(xhrBody);
     }
   }
@@ -343,6 +343,10 @@ function SpotJs () {
   }
 
   let setCookie = function (name, value) {
+    if (isPersonalInfo(value)) {
+      logError("spotjs.setCookie exiting - value looks like personal info");
+      return;
+    }
     let c = config.cookiePrefix+name+'='+value;
     c += '; SameSite=None';
     c += '; Secure=true';
@@ -352,7 +356,14 @@ function SpotJs () {
     logTrace("spotjs.setCookie c=", c);
   }
 
-  function getParam(name, url) {
+  // Detect if a value looks like personal info
+  let isPersonalInfo = function (val) {
+    // look for possible email address
+    return /^.+@.+\..+$/.test(val);
+  }
+ 
+  // get a querystring parameter by name
+  let getParam = function (name, url) {
     if (!url) { url = window.location.href; }
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
