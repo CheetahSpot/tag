@@ -204,17 +204,17 @@ function SpotJs () {
     }
     // Copy known params to top-level Object, and submit others as params_json
     if (typeof data.params === "object") {
-      evt.event.params_json = {};
+      let params_json = {};
       for (const key of Object.keys(data.params)) {
         if (config.knownEventParams[key] !== undefined) {
           evt.event[key] = data.params[key];
         }
         else {
-          // unknown event params are in params_json
-          evt.event.params_json[key] = data.params[key];
+          // send unknown event params in params_json
+          params_json[key] = data.params[key];
+          evt.event.params_json = params_json;
         }
       }
-      if (Object.keys(evt.event.params_json).length === 0) { delete evt.event.params_json; }
     }
     // Update attributes
     let update_attributes = data.update_attributes || {};
