@@ -183,13 +183,11 @@ function SpotJs () {
   let processEvent = function (data) {
     let send = preprocessEvent(data);
     processUser(data);
-    if (!send) {
-      log("spotjs.processEvent exiting");
+    if (!data.type || !send) {
+      log("spotjs.processEvent - do not send");
+      return;
     }
     log("spotjs.processEvent data =", data);
-    if (!data.type) {
-      log("spotjs.processEvent error - data.type is required");
-    }
     // Construct Event
     var evt = {
       "event": { "type": data.type, "iso_time": data.iso_time, "params_json": {} },
