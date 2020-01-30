@@ -21,8 +21,13 @@ function SpotJs () {
     useNavigatorBeacon: false,
     knownEventParams: {
       "subtype": "event_subtype",
-      "url": "",
-      "referrer: "" }
+      "source": "event_source",
+      "url": "click_link_url",
+      "click_link_url": "click_link_url",
+      "click_link_name": "click_link_name",
+      "click_link_tags": "click_link_tags",
+      "referrer": "web_event_url_referrer",
+      "user_agent": "user_agent_raw" }
   }
     debug: 1
   };
