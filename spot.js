@@ -206,7 +206,7 @@ function SpotJs () {
     if (typeof data.params === "object") {
       evt.event.params_json = {};
       for (const key of Object.keys(data.params)) {
-        if (knownEventParams[key] !== undefined) {
+        if (config.knownEventParams[key] !== undefined) {
           evt.event[key] = data.params[key];
         }
         else {
