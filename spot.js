@@ -194,11 +194,6 @@ function SpotJs () {
       "client": { "identifier": { "id": user.ut, "id_field": user.utAttr } },
       "campaign": data.campaign || config.defaultCampaign
     };
-    if (!user.id) { // anon
-      evt.client.identifier.id = user.dt;
-      evt.client.identifier.id_field = user.dtAttr;
-      evt.client.identifier.visitor = true;
-    }
     if (!evt.event.iso_time) {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
@@ -213,7 +208,10 @@ function SpotJs () {
     // Update attributes
     let update_attributes = data.update_attributes || {};
     Object.apply(update_attributes, user.update_attributes);
-    if (evt.client.identifier.visitor) {
+    // Anonymous
+    if (!user.id) {
+      evt.client.identifier.id = user.dt;
+      evt.client.identifier.id_field = user.dtAttr;
       update_attributes.visitor = true;
     }
     if (Object.keys(update_attributes).length) {
