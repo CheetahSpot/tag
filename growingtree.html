@@ -23,6 +23,7 @@
         "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
         "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
         "identify":         { type: "identify", "params": { 'ut': 'UsrTok00001', 'utAttr': 'user_token' } },
+        "email_identify":   { type: "identify", "params": { 'ut': 'susan@example.com', 'utAttr': 'email' } },
         "signin":           { type: "signin", "params": { 'ut': 'IntId00002', 'utAttr': 'integration_id' } },
         "signout":          { type: "signout" },
         "optin":            { type: "optin" },
@@ -112,6 +113,7 @@
         <p class="lead">A user identifier is also stored in the "spot_us" cookie, unless it appears to be personal info (i.e. email address).</p>
         <p>
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
+          <a class="btn btn-lg btn-info" href="#" id="email_identify" role="button" onclick="">Email Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
