@@ -50,23 +50,17 @@ function SpotJs () {
       log("spotjs.identify error - user object is required", user2);
       return false;
     }
-    user2.subtype = user2.subtype || "identify";
     setUser(user2);
     if (!skipEvent) {
-      let params = { subtype: 'identify' };
-      Object.assign(params, spotjs.user);
-      spotjs.dataLayer.push({ "type": "identify", "params": params });
+      spotjs.dataLayer.push({ "type": "identify", "params": spotjs.user });
     }
   }
 
   // @public signin
   let signIn = spotjs.signin = function (user2, skipEvent) {
-    if (typeof user2 !== "object") {
-      log("spotjs.signin existing - user object is required");
-      return;
-    }
-    user2.subtype = user2.subtype || "signin";
-    spotjs.identify(user2, skipEvent);
+    identify(user2, skipEvent);
+    // Loyalty signin counts as optin
+    setOptin(true);
   }
   
   // @public Signout
@@ -82,7 +76,6 @@ function SpotJs () {
     setCookie("optin", user.optin);
     user.dnt = user.optin ? 0 : 1;
     setCookie("dnt", user.dnt);
-    // TODO - decide if this should also clear spot_ut cookie
   }
 
   // Init Data Layer
