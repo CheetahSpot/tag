@@ -46,9 +46,11 @@ function SpotJs () {
   };
 
   // logger
-  let logError = config.logLevel >=1 ? console.logError.bind(window.console) : function(){};
-  let logInfo  = config.logLevel >=2 ? console.logInfo.bind(window.console) : function(){};
-  let logTrace = config.logLevel >=3 ? console.logTrace.bind(window.console) : function(){};
+  let emptyFn = function(){},
+      log = config.logLevel ? console.log.bind(window.console) : emptyFn,
+      logError = config.logLevel >=1 ? log : emptyFn,
+      logInfo  = config.logLevel >=2 ? log : emptyFn,
+      logTrace = config.logLevel >=3 ? log : emptyFn;
 
   // @public track
   // Helper function to push an event to the data layer
