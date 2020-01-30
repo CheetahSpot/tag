@@ -253,7 +253,6 @@ function SpotJs () {
     }
   }
 
-
   // Load the user from querystring or inline variable
   let detectUser = function () {
     let user2 = null;
@@ -272,6 +271,10 @@ function SpotJs () {
       }
     }
     if (user2) {
+      if (user2.ut && !user2.utAttr) {
+        // Assume user_token is the default attribute
+        user2.utAttr = config.utAttr;
+      }
       log("spotjs.detectUser identity user2 = ", user2);
       identify(user2);
     }
