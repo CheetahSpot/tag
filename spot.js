@@ -10,8 +10,8 @@ function SpotJs () {
     apiAuth: null,
     apiHost: null,
     defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
-    dtAttr: 'integration6_id', // TODO - update to device_token
-    utAttr: 'integration5_id', // TODO - update to user_token
+    dtAttr: 'device_token',
+    utAttr: 'member_token',
     apiEndpoint: '/edp/api/event',
     apiContentType: 'application/json',
     userParam: 'spot_user',
@@ -291,7 +291,7 @@ function SpotJs () {
     }
   }
 
-  let getUserCookie = function (key, defaultValue, data) {
+  let getUserCookie = function (key, defaultVal, data) {
     let cookieName = config.cookiePrefix,
         cookieVal = getCookie(cookieName);
     if (user[key] === undefined || user[key] === null) {
@@ -301,17 +301,18 @@ function SpotJs () {
       else if (cookieVal) {
         user[key] = cookieVal;
       }
-      if (!user[key] && defaultValue) {
-        if (defaultValue === "{uuidv4}") {
+      if (!user[key] && defaultVal) {
+        if (defaultVal === "{uuidv4}") {
           user[key] = uuidv4();
         }
         else {
-          user[key] = defaultValue;
+          user[key] = defaultVal;
         }
       }
     }
     let cookieVal2 = user[key];
-    if (cookieVal2 !== undefined && cookieVal2 !== cookieVal) {
+    // Save the value as a cookie, but only if necessary
+    if (cookieVal2 !== undefined && cookieVal2 !== cookieVal && (cookieVal2 !== defaultValue && cookieVal === null)) {
       setCookie(cookieName, cookieVal2);
     }
   }
