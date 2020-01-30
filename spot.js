@@ -327,14 +327,15 @@ function SpotJs () {
     }
     let cookieVal2 = user[key];
     // Save the value as a cookie, but only if necessary
-    //if (cookieVal2 !== undefined && cookieVal2 !== cookieVal && (cookieVal2 !== defaultVal && !cookieVal)) {
+    if (cookieVal2 !== undefined && cookieVal2 !== cookieVal) { // && (cookieVal2 !== defaultVal && !cookieVal)) {
       setCookie(key, cookieVal2);
-    //}
+    }
   }
 
   let getCookie = function (name) {
     var v = document.cookie.match('(^|;) ?'+config.cookiePrefix+name+'=([^;]*)(;|$)');
-    return v ? v[2] : null;
+    let v2 = v ? v[2] : null;
+    return v2 === "null" ? null : v2;
   }
 
   let setCookie = function (name, value) {
