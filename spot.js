@@ -28,6 +28,7 @@ function SpotJs () {
       "click_link_tags": "click_link_tags",
       "referrer": "web_event_url_referrer",
       "user_agent": "user_agent_raw" },
+    autoEvents: [ { type:"web", params: { subtype: "visit", url: "{href}", referrer: "{referrer}"} ],
     debug: 1 // set debug=2 for trace
   };
 
@@ -94,6 +95,9 @@ function SpotJs () {
   let initDataLayer = function () {
     if (!spotjs.dataLayer) {
       spotjs.dataLayer = window[config.dataLayerId] = window[config.dataLayerId] || [];
+      if (config.autoEvents !== undefined) {
+        spotjs.dataLayer.concat(config.autoEvents);
+      }
       spotjs.dataLayer.push = function(e) {
         Array.prototype.push.call(spotjs.dataLayer, e);
         processDataLayer();
@@ -159,6 +163,9 @@ function SpotJs () {
       // do not track - do not send events
       send = false;
     }
+    if (!data.type) {
+      return;
+    }
     switch (data.type) {
       case "identify":
         identify(data.params, true);
@@ -183,14 +190,26 @@ function SpotJs () {
     return send;
   }
 
+  let formatEventParam = function (key, val) {
+    switch (val) {
+      case "{href}":
+        return document.location.href;
+        break;
+      case "{referrer}":
+        return document.referrer;
+        break;
+      default:
+        return val;
+    }
+  }
 
   // Process a business event, such as a page visit, add to cart, etc.
   let processEvent = function (data) {
-    let send = preprocessEvent(data);
-    processUser(data);
     if (!data.type) {
       return;
     }
+    let send = preprocessEvent(data);
+    processUser(data);
     if (!send) {
       log("spotjs.processEvent - do not track");
       return;
@@ -210,12 +229,13 @@ function SpotJs () {
     if (typeof data.params === "object") {
       let params_json = {};
       for (const key of Object.keys(data.params)) {
+        let val = formatEventParam(evt.event, key, data.params[key]);
         if (config.knownEventParams[key] !== undefined) {
-          evt.event[key] = data.params[key];
+          evt.event[key] = val;
         }
         else {
           // send unknown event params in params_json
-          params_json[key] = data.params[key];
+          params_json[key] = val;
           evt.event.params_json = params_json;
         }
       }
