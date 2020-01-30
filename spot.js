@@ -97,6 +97,9 @@ function SpotJs () {
       if (config.autoEvents !== undefined) {
         spotjs.dataLayer.concat(config.autoEvents);
       }
+      spotjs.dataLayer.pushSilent = function(e) {
+        Array.prototype.push.call(spotjs.dataLayer, e);
+      };
       spotjs.dataLayer.push = function(e) {
         Array.prototype.push.call(spotjs.dataLayer, e);
         processDataLayer();
@@ -108,7 +111,6 @@ function SpotJs () {
   let processDataLayer = function () {
     logTrace("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer));
     if (spotjs.dataLayer) {
-      spotjs.pendingEvents = [];
       while (spotjs.dataLayer.length) {
         let data = spotjs.dataLayer.shift();
         if (typeof data !== "object" || !data) {
@@ -306,7 +308,7 @@ function SpotJs () {
       }
       logInfo("spotjs.detectUser identity user2 = ", user2);
       // Process this event before any others
-      spotjs.dataLayer.push({ "type": "identify", "params": user2 });
+      spotjs.pendingEvents.push({ "type": "identify", "params": user2 });
     }
   }
 
