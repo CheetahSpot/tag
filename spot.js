@@ -365,8 +365,8 @@ function SpotJs () {
   }
 
   let setCookie = function (name, value) {
-    if (isPersonalInfo(value)) {
-      logError("spotjs.setCookie exiting - value looks like personal info");
+    if (isPersonalInfo(name, value)) {
+      logError("spotjs not setting cookie for", name, "- value looks like personal info");
       return;
     }
     let c = config.cookiePrefix+name+'='+value;
@@ -379,7 +379,7 @@ function SpotJs () {
   }
 
   // Detect if a value looks like personal info
-  let isPersonalInfo = function (val) {
+  let isPersonalInfo = function (name, val) {
     // look for possible email address
     return /^.+@.+\..+$/.test(val);
   }
