@@ -232,7 +232,7 @@ function SpotJs () {
       for (const key of Object.keys(data.params)) {
         let val = formatEventParam(evt.event, key, data.params[key]);
         if (config.eventParamKeys[key] !== undefined) {
-          evt.event[key] = val;
+          evt.event[config.eventParamKeys[key]] = val;
         }
         else {
           // send unknown event params in params_json
