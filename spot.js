@@ -19,7 +19,7 @@ function SpotJs () {
     cookiePrefix: 'spot_',
     cookieMaxAge: 60*60*24*365, // 1y
     useNavigatorBeacon: false,
-    knownEventParams: {
+    eventParamKeys: {
       "subtype": "event_subtype",
       "source": "event_source",
       "url": "click_link_url",
@@ -28,7 +28,7 @@ function SpotJs () {
       "click_link_tags": "click_link_tags",
       "referrer": "web_event_url_referrer",
       "user_agent": "user_agent_raw" },
-    autoEvents: [ { type:"web", params: { subtype: "visit", url: "{href}", referrer: "{referrer}"} ],
+    autoEvents: [ { type:"web", params: { subtype: "visit", url: "{href}", referrer: "{referrer}"} } ],
     debug: 1 // set debug=2 for trace
   };
 
@@ -230,7 +230,7 @@ function SpotJs () {
       let params_json = {};
       for (const key of Object.keys(data.params)) {
         let val = formatEventParam(evt.event, key, data.params[key]);
-        if (config.knownEventParams[key] !== undefined) {
+        if (config.eventParamKeys[key] !== undefined) {
           evt.event[key] = val;
         }
         else {
