@@ -238,26 +238,28 @@ function SpotJs () {
   }
 
   let sendEvent = function (evt) {
-    log("spotjs.sendEvent evt =", evt);
+    logTrace("spotjs.sendEvent evt =", evt);
     if (config.useNavigatorBeacon && navigator.sendBeacon) {
       let blob = new Blob(JSON.stringify(evt), { "type": "application/json" });
       navigator.sendBeacon(config.apiHost + config.apiEndpoint, blob);
     }
     else {
       let evtId = "event-"+spotjs.sentEvents.length;
-      spotjs.sentEvents[evtId] = { "evt": evt, "readyState": null };
       let xhr = new XMLHttpRequest();
+      spotjs.sentEvents[evtId] = { "evt": evt, "readyState": null, "xhr": xhr };
       xhr.withCredentials = true;
       xhr.addEventListener("readystatechange", function() {
         spotjs.sentEvents[evtId].readyState = this.readyState;
         if(this.readyState === 4) {
-          log("spotjs.sendEvent evtId =", evtId, " response =", this.responseText, " evt=", spotjs.sentEvents[evtId]);
+          log("spotjs", evtId, "response", this.responseText);
         }
       });
       xhr.open("POST", config.apiHost+config.apiEndpoint, true);
       xhr.setRequestHeader("Content-Type", config.apiContentType);
       xhr.setRequestHeader("Authorization", config.apiAuth);
-      xhr.send(JSON.stringify(evt));
+      let xhrBody = JSON.stringify(evt);
+      log("spotjs", evtId, "request", xhrBody);
+      xhr.send(xhrBody);
     }
   }
 
