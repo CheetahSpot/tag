@@ -188,7 +188,7 @@ function SpotJs () {
     // Construct Event
     var evt = {
       "event": { "type": data.type, "iso_time": data.iso_time, "params_json": {} },
-      "client": { "identifier": { "id": user.ut, "id_field": user.utAttr } },
+      "client": { "identifier": { "id": user.ut, "id_field": user.utAttr, "device_token": user.dt } },
       "campaign": data.campaign || config.defaultCampaign
     };
     if (!evt.event.iso_time) {
