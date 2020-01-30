@@ -28,7 +28,7 @@ function SpotJs () {
       "click_link_tags": "click_link_tags",
       "referrer": "web_event_url_referrer",
       "user_agent": "user_agent_raw" },
-    debug: 1
+    debug: 1 // set debug=2 for trace
   };
 
   // @public user object
@@ -46,6 +46,8 @@ function SpotJs () {
 
   // log wrapper
   let log = config.debug ? console.log.bind(window.console) : function(){};
+  let logTrace = config.debug > 1 ? console.log.bind(window.console) : function(){};
+  let logError = console.log.bind(window.console);
 
   // @public track
   // Helper function to push an event to the data layer
@@ -56,7 +58,7 @@ function SpotJs () {
   // @public identify
   let identify = spotjs.identify = function (user2, skipEvent) {
     if (typeof user2 !== "object") {
-      log("spotjs.identify error - user object is required", user2);
+      logError("spotjs.identify error - user object is required", user2);
       return false;
     }
     setUser(user2);
@@ -101,13 +103,13 @@ function SpotJs () {
 
   // Process data layer array
   let processDataLayer = function () {
-    log("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer));
+    logTrace("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer));
     if (spotjs.dataLayer) {
       spotjs.pendingEvents = [];
       while (spotjs.dataLayer.length) {
         let data = spotjs.dataLayer.shift();
         if (typeof data !== "object" || !data) {
-          log("spotjs.processDataLayer skipping non-object item", data)
+          logTrace("spotjs.processDataLayer skipping non-object item", data)
           continue;
         }
         if (data.config && typeof data.config === "object") {
@@ -115,7 +117,7 @@ function SpotJs () {
         }
         let configError = validateConfig();
         if (configError) {
-          log("spotjs.processDataLayer exiting due to config error:", configError, config);
+          logError("spotjs.processDataLayer exiting due to config error:", configError, config);
           spotjs.pendingEvents.push(data);
           continue;
         }
@@ -129,10 +131,10 @@ function SpotJs () {
   // @public setConfig
   let setConfig = spotjs.setConfig = function (config2) {
     if (typeof config2 !== "object") {
-      log("spotjs.setConfig error - config object is required");
+      logError("spotjs.setConfig error - config object is required");
     }
     Object.assign(config, config2);
-    log("spotjs.setConfig config =", config);
+    logTrace("spotjs.setConfig config =", config);
     // Process pending events
     while (spotjs.pendingEvents.length) {
       spotjs.dataLayer.push(spotjs.pendingEvents.shift());
@@ -193,7 +195,7 @@ function SpotJs () {
       log("spotjs.processEvent - do not track");
       return;
     }
-    log("spotjs.processEvent data =", data);
+    logTrace("spotjs.processEvent data =", data);
     // Construct Event
     var evt = {
       "event": { "type": data.type, "iso_time": data.iso_time, "params_json": {} },
@@ -231,7 +233,7 @@ function SpotJs () {
       evt.callback = { "update_attributes": update_attributes };
     }
 
-    log("spotjs.processEvent", evt.event.type, "/", evt.event.subtype, " evt=", evt);
+    logTrace("spotjs.processEvent", evt.event.type, "/", evt.event.subtype, " evt=", evt);
     sendEvent(evt);
   }
 
@@ -264,7 +266,7 @@ function SpotJs () {
     let user2 = null;
     if (typeof window[config.userParam] !== "undefined") {
       user2 = window[config.userParam];
-      log("spotjs.detectUser window.user2 = ", user2);
+      logTrace("spotjs.detectUser window.user2 = ", user2);
     }
     if (!user2) {
       let param = getParam(config.userParam);
@@ -273,7 +275,7 @@ function SpotJs () {
           param = atob(param);
         }
         user2 = JSON.parse(param);
-        log("spotjs.detectUser ?"+config.userParam+" = ", user2);
+        logTrace("spotjs.detectUser ?"+config.userParam+" = ", user2);
       }
     }
     if (user2) {
@@ -289,10 +291,10 @@ function SpotJs () {
   // setUser
   let setUser = function (user2) {
     if (typeof user2 !== "object") {
-      log("spotjs.setUser error - user object is required", user2);
+      logError("spotjs.setUser error - user object is required", user2);
       return false;
     }
-    log("spotjs.setUser user2 =", JSON.stringify(user2));
+    logTrace("spotjs.setUser user2 =", JSON.stringify(user2));
     Object.assign(spotjs.user, user2);
     processUser();
     return true;
@@ -345,7 +347,7 @@ function SpotJs () {
     c += '; Max-Age='+config.cookieMaxAge;
     c += "; Path=/";
     document.cookie = c;
-    //log("spotjs.setCookie c=", c);
+    logTrace("spotjs.setCookie c=", c);
   }
 
   function getParam(name, url) {
@@ -372,7 +374,7 @@ function SpotJs () {
   // Finally, process any existing events
   processDataLayer();
 
-  log(spotjs.name, "created");
+  log(spotjs.name, "ready");
   return spotjs;
 }
 
