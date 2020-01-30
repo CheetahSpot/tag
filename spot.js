@@ -263,20 +263,20 @@ function SpotJs () {
       navigator.sendBeacon(config.apiHost + config.apiEndpoint, blob);
     }
     else {
-      let evtId = "event-"+spotjs.sentEvents.length;
       let xhr = new XMLHttpRequest();
+      let evtId = "event-"+spotjs.sentEvents.length;
+      let sentEvent = { "id": evtId, "evt": evt, "xhr": xhr };
+      spotjs.sentEvents.push(sentEvent);
       xhr.withCredentials = true;
       xhr.open("POST", config.apiHost+config.apiEndpoint, true);
       xhr.setRequestHeader("Content-Type", config.apiContentType);
       xhr.setRequestHeader("Authorization", config.apiAuth);
       xhr.addEventListener("readystatechange", function() {
-        spotjs.sentEvents[evtId].readyState = this.readyState;
         if(this.readyState === 4) {
           logInfo("spotjs", evtId, "received response text =", this.responseText);
         }
       });
       let xhrBody = JSON.stringify(evt);
-      spotjs.sentEvents[evtId] = { "evt": evt, "xhr": xhr };
       logInfo("spotjs", evtId, "sending request body =", xhrBody);
       xhr.send(xhrBody);
     }
@@ -306,7 +306,7 @@ function SpotJs () {
       }
       logInfo("spotjs.detectUser identity user2 = ", user2);
       // Process this event before any others
-      spotjs.dataLayer.unshift({ "type": "identify", "params": user2 });
+      spotjs.dataLayer.push({ "type": "identify", "params": user2 });
     }
   }
 
