@@ -79,7 +79,7 @@ function SpotJs () {
     // clear user token
     user.ut = "";
     user.utAttr = config.utAttr;
-    setCookie("ut", user.ut);
+    setCookie("ut", "redacted");
     setCookie("utAttr", user.utAttr);
   }
 
