@@ -60,7 +60,7 @@ function SpotJs () {
   let signIn = spotjs.signin = function (user2, skipEvent) {
     identify(user2, skipEvent);
     // Loyalty signin counts as optin
-    setOptin(true);
+    setOptin(1);
   }
   
   // @public Signout
@@ -72,9 +72,8 @@ function SpotJs () {
 
   // @public setOptin
   let setOptin = spotjs.setOptin = function (optin) {
-    user.optin = optin ? 1 : 0;
-    setCookie("optin", user.optin);
-    user.dnt = user.optin ? 0 : 1;
+    user.optin = optin === 0 ? 0 : 1;
+    user.dnt = user.optin === 0 ? 1 : 0;
     setCookie("dnt", user.dnt);
   }
 
@@ -159,11 +158,11 @@ function SpotJs () {
         signOut();
         break;
       case "optin":
-        setOptin(true);
+        setOptin(1);
         send = true;
         break;
       case "optout":
-        setOptin(false);
+        setOptin(0);
         break;
       default:
         break;
@@ -284,7 +283,6 @@ function SpotJs () {
     getUserCookie("dnt", null, data);
     getUserCookie("dtAttr", config.dtAttr, data);
     getUserCookie("utAttr", config.utAttr, data);
-    user.dnt = user.dnt ? 1 : 0;
   }
 
   let getUserCookie = function (key, defaultVal, data) {
