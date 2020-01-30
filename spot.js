@@ -293,7 +293,7 @@ function SpotJs () {
   }
 
   let getUserCookie = function (key, defaultVal, data) {
-    let cookieVal = getCookie(tag);
+    let cookieVal = getCookie(key);
     if (user[key] === undefined || user[key] === null) {
       if (typeof data === "object" && data[key] !== undefined) {
         user[key] = data[key];
@@ -313,7 +313,7 @@ function SpotJs () {
     let cookieVal2 = user[key];
     // Save the value as a cookie, but only if necessary
     if (cookieVal2 !== undefined && cookieVal2 !== cookieVal && (cookieVal2 !== defaultVal && cookieVal === null)) {
-      setCookie(tag, cookieVal2);
+      setCookie(key, cookieVal2);
     }
   }
 
