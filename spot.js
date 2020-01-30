@@ -37,7 +37,7 @@ function SpotJs () {
 
   // @public return object
   let spotjs = {
-    name: "spotjs "+version+" "+Math.random().toString(36).substring(4),
+    name: "spotjs "+version,
     config: config,
     user: user,
     dataLayer: null,
@@ -397,7 +397,8 @@ function SpotJs () {
   // Finally, process any existing events
   processDataLayer();
 
-  logInfo(spotjs.name, "ready");
+  spotjs.instance = uuidv4();
+  logInfo(spotjs.name, "ready", spotjs.instance);
   return spotjs;
 }
 
