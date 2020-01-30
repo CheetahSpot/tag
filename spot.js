@@ -51,9 +51,6 @@ function SpotJs () {
       return false;
     }
     user2.subtype = user2.subtype || "identify";
-    user2.dt = user2.dt || user.dt;
-    user2.dtAttr = user2.dtAttr || user.dtAttr;
-    user2.dnt = user2.dnt ? 1 : 0;
     setUser(user2);
     if (!skipEvent) {
       let params = { subtype: 'identify' };
@@ -278,22 +275,24 @@ function SpotJs () {
     }
     log("spotjs.setUser user2 =", JSON.stringify(user2));
     Object.assign(spotjs.user, user2);
-    processUser(spotjs.user);
+    processUser();
     return true;
   }
 
   let processUser = function (data) {
+    data = data || {};
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
     getUserCookie("dtAttr", config.dtAttr, data);
     getUserCookie("utAttr", config.utAttr, data);
+    user.dnt = user.dnt ? 1 : 0;
   }
 
   let getUserCookie = function (key, defaultVal, data) {
     let cookieVal = getCookie(key);
     if (user[key] === undefined || user[key] === null) {
-      if (typeof data === "object" && data[key] !== undefined) {
+      if (data[key] !== undefined) {
         user[key] = data[key];
       }
       else if (cookieVal) {
