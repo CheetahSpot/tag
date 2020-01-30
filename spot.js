@@ -203,7 +203,7 @@ function SpotJs () {
     let update_attributes = data.update_attributes || {};
     Object.apply(update_attributes, user.update_attributes);
     // Anonymous
-    if (!user.id) {
+    if (!evt.client.identifier.id) {
       evt.client.identifier.id = user.dt;
       evt.client.identifier.id_field = user.dtAttr;
       update_attributes.visitor = true;
