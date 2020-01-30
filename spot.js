@@ -275,11 +275,11 @@ function SpotJs () {
       xhr.setRequestHeader("Authorization", config.apiAuth);
       xhr.addEventListener("readystatechange", function() {
         if(this.readyState === 4) {
-          logInfo("spotjs", evtId, "received response text =", this.responseText);
+          logInfo("spotjs", evtId, "completed =", this.responseText);
         }
       });
       let xhrBody = JSON.stringify(evt);
-      logInfo("spotjs", evtId, "sending request body =", xhrBody);
+      logInfo("spotjs", evtId, "sending =", xhrBody);
       xhr.send(xhrBody);
     }
   }
