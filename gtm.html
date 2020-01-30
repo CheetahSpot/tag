@@ -3,13 +3,14 @@
   <head>
     <title>Spot Test - GTM</title>
 
-    <!-- Google Tag Manager -->
+     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-KDBNM2C');</script>
-    <!-- End Google Tag Manager -->
+    <!-- End Google Tag Manager --> 
+
 
     <!-- make the page look nice -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -29,13 +30,13 @@
               <a class="nav-link" href="index.html">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="gtm.html">GTM</a>
+              <a class="nav-link" href="gtm.html">GTM</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="cust100.html">Inline C100</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="growingtree.html">Inline GT</a>
+              <a class="nav-link active" href="growingtree.html">Inline GT</a>
             </li>
           </ul>
         </nav>
@@ -48,23 +49,48 @@
           GTM detects page load and fires a GTM trigger, which loads a Spot GTM tag.
           GTM also detects button clicks, which similarly fire GTM triggers, which load Spot GTM tags.
           Spot tags submit EDP Events.
+          View page source to see the code.
+        <br><br>
+        The first event is pushed on page visit:</p>
+        <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Cart</h1>
+        <p class="lead">Click buttons to trigger events to test abandoned cart.
+          Each button pushes an event onto the data layer.
+          Spot detects updates to the data layer and submits EDP Events.
         </p>
         <p>
-          <a class="btn btn-lg btn-success" href="#" id="add_to_cart" role="button">Add to Cart</a>
-          <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
-          <a class="btn btn-lg btn-primary" href="#" id="cart_checkout" role="button">Checkout</a>
+          <a class="btn btn-lg btn-primary" href="#" id="add_to_cart" role="button">Add to Cart</a>
+          <a class="btn btn-lg btn-info" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
+          <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
-        <h1>Sign-in and Opt-in</h1>
+      </div>
+
+      <div class="jumbotron">
+        <h1>User Identification</h1>
         <p class="lead">If a user signs in or is otherwise identified, a "match" is made between their anonymous and known records.</p>
         <p>
+          <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
-        <p class="lead">If a user opts in or opts out, the device token cookie is updated to .</p>
-        <p>
-          <a class="btn btn-lg btn-success" href="#" id="optin" role="button">Opt In</a>
-          <a class="btn btn-lg btn-danger" href="#" id="optout" role="button">Opt Out</a>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Managing User Consent</h1>
+        <p class="lead">
+        Spot supports user consent to tracking, using a "Do Not Track" cookie.
         </p>
+        <p>
+          <a class="btn btn-lg btn-success" href="#" id="optin" role="button">Optin</a>
+          <a class="btn btn-lg btn-warning" href="#" id="optout" role="button">Optout</a>
+        </p>
+        <p>
+        Tracking is enabled by default.
+        An optin or optout Event out sets a Do Not Track cookie "spot_dnt".  Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".  </p>
+        <p> If Do Not Track is enabled (dnt=1) then Events are blocked and not sent to the server (even the optout Event is blocked).  Optin/optout does not affect other cookies.  </p>
       </div>
     
     </div>
