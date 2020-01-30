@@ -12,19 +12,21 @@
         spot_data.push(evt);
       }
       // Push config to data layer
+      //pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } });
       pushEvent({ apiHost: "https://api-cust100.demostellar.com", apiAuth: "Bearer 9d93dd6d82531de07978181313a29978bab3c4c0a3112cbe527e10cd1c3add8d:27ceca09315271167c9c88859fe02965716d7f8d844055eb354dff659cc569d9" });
       // Push a web visit event to the data layer
       pushEvent({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
 
       // Define some events I want to capture
       var customEvents = {
-        "add_to_cart": { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
+        "add_to_cart":      { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
         "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
-        "cart_checkout": { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
-        "signin": { type: "signin", "params": { 'subtype': 'signin', 'email': 'edward@example.com', 'id_field': 'email' } },
-        "signout": { type: "signout" },
-        "optin": { type: "optin" },
-        "optout": { type: "optout" }
+        "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
+        "identify":         { type: "identify", "params": { 'ut': 'INT00001', 'utAttr': 'integration_id' } },
+        "signin":           { type: "signin", "params": { 'ut': 'INT00002', 'utAttr': 'integration_id' } },
+        "signout":          { type: "signout" },
+        "optin":            { type: "optin" },
+        "optout":           { type: "optout" }
       }
 
       // Trigger on button click
@@ -72,10 +74,10 @@
               <a class="nav-link" href="gtm.html">GTM</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="cust100.html">Inline C100</a>
+              <a class="nav-link" href="cust100.html">Inline C100</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="growingtree.html">Inline GT</a>
+              <a class="nav-link active" href="growingtree.html">Inline GT</a>
             </li>
           </ul>
         </nav>
@@ -83,9 +85,18 @@
       </div>
 
       <div class="jumbotron">
-        <h1>Spot Test - Inline (Cust100)</h1>
-        <p class="lead">This is a test of Spot using inline code. View page source to see the code.
-          Each button has inline code to add an event to the data layer.
+        <h1>Spot Test - Inline</h1>
+        <p class="lead">This is a test of Spot using inline code.
+        View page source to see the code.
+        <br><br>
+        The first event is pushed on page visit:</p>
+        <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Cart</h1>
+        <p class="lead">Click buttons to trigger events to test abandoned cart.
+          Each button pushes an event onto the data layer.
           Spot detects updates to the data layer and submits EDP Events.
         </p>
         <p>
@@ -93,29 +104,34 @@
           <a class="btn btn-lg btn-info" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
           <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
-        <p class="lead">The inline page code submits events by calling spot_data.push(), and Spot listens for the array push.</p>
-        <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
       </div>
 
       <div class="jumbotron">
-        <h1>Sign-in</h1>
+        <h1>User Identification</h1>
         <p class="lead">If a user signs in or is otherwise identified, a "match" is made between their anonymous and known records.</p>
         <p>
+          <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
       </div>
 
       <div class="jumbotron">
-        <h1>Opt-in</h1>
-        <p class="lead">If a user opts in or opts out, a "do not track" cookie is set.</p>
-        <p>
-          <a class="btn btn-lg btn-success" href="#" id="optin" role="button">Opt In</a>
-          <a class="btn btn-lg btn-warning" href="#" id="optout" role="button">Opt Out</a>
+        <h1>Managing User Consent</h1>
+        <p class="lead">
+        Spot supports user consent to tracking, using a "Do Not Track" cookie.
         </p>
+        <p>
+          <a class="btn btn-lg btn-success" href="#" id="optin" role="button">Optin</a>
+          <a class="btn btn-lg btn-warning" href="#" id="optout" role="button">Optout</a>
+        </p>
+        <p>
+        Tracking is enabled by default.
+        An optin or optout Event out sets a Do Not Track cookie "spot_dnt".  Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".  </p>
+        <p> If Do Not Track is enabled (dnt=1) then Events are blocked and not sent to the server (even the optout Event is blocked).  Optin/optout does not affect other cookies.  </p>
       </div>
     
     </div>
   </body>
 </html>
-    
+      
