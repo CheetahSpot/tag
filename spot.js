@@ -27,8 +27,7 @@ function SpotJs () {
       "click_link_name": "click_link_name",
       "click_link_tags": "click_link_tags",
       "referrer": "web_event_url_referrer",
-      "user_agent": "user_agent_raw" }
-  }
+      "user_agent": "user_agent_raw" },
     debug: 1
   };
 
