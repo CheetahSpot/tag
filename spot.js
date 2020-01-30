@@ -64,16 +64,16 @@ function SpotJs () {
       logError("spotjs.identify error - user object is required", user2);
       return false;
     }
-    setUser(user2);
+    logTrace("spotjs.identify user2 =", JSON.stringify(user2));
+    Object.assign(spotjs.user, user2);
     if (!skipEvent) {
       spotjs.dataLayer.push({ "type": "identify", "params": spotjs.user });
     }
   }
 
-  // @public signin
+  // @public signin - identify plus optin
   let signIn = spotjs.signin = function (user2, skipEvent) {
     identify(user2, skipEvent);
-    // Loyalty signin counts as optin
     setOptin(1);
   }
   
@@ -310,18 +310,6 @@ function SpotJs () {
       logInfo("spotjs.detectUser identity user2 = ", user2);
       identify(user2);
     }
-  }
-
-  // setUser
-  let setUser = function (user2) {
-    if (typeof user2 !== "object") {
-      logError("spotjs.setUser error - user object is required", user2);
-      return false;
-    }
-    logTrace("spotjs.setUser user2 =", JSON.stringify(user2));
-    Object.assign(spotjs.user, user2);
-    processUser();
-    return true;
   }
 
   let processUser = function (data) {
