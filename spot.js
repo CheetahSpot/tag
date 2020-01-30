@@ -264,7 +264,7 @@ function SpotJs () {
     }
     else {
       let xhr = new XMLHttpRequest();
-      let evtId = evt.type+"-event-"+spotjs.sentEvents.length;
+      let evtId = evt.event.type+"-event-"+spotjs.sentEvents.length;
       let sentEvent = { "id": evtId, "evt": evt, "xhr": xhr };
       spotjs.sentEvents.push(sentEvent);
       xhr.withCredentials = true;
