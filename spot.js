@@ -116,7 +116,9 @@ function SpotJs () {
           spotjs.pendingEvents.push(data);
           continue;
         }
-        processEvent(data);
+        if (data.type) {
+          processEvent(data);
+        }
       }
     }
   }
@@ -180,8 +182,11 @@ function SpotJs () {
   let processEvent = function (data) {
     let send = preprocessEvent(data);
     processUser(data);
-    if (!data.type || !send) {
-      log("spotjs.processEvent - do not send");
+    if (!data.type) {
+      return;
+    }
+    if (!send) {
+      log("spotjs.processEvent - do not track");
       return;
     }
     log("spotjs.processEvent data =", data);
