@@ -19,7 +19,7 @@ function SpotJs () {
     cookiePrefix: 'spot_',
     cookieMaxAge: 60*60*24*365, // 1y
     useNavigatorBeacon: false, // not supported in IE
-    logLevel: 1, // 0:none, 1:error, 2:info, 3:trace
+    logLevel: 2, // 0:none, 1:error, 2:info, 3:trace
     eventParamKeys: {
       "subtype": "event_subtype",
       "source": "event_source",
