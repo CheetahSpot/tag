@@ -11,7 +11,7 @@ function SpotJs () {
     apiHost: null,
     defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
     dtAttr: 'device_token',
-    utAttr: 'member_token',
+    utAttr: 'user_token',
     apiEndpoint: '/edp/api/event',
     apiContentType: 'application/json',
     userParam: 'spot_user',
