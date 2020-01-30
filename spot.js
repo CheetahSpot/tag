@@ -23,7 +23,7 @@ function SpotJs () {
   };
 
   // @public user object
-  let user = { dt: null, ut: null, known: null, visitor: null, optin: null, dnt: null, update_attributes: {} };
+  let user = { dt: null, ut: null, optin: null, dnt: null, update_attributes: {} };
 
   // @public return object
   let spotjs = {
@@ -119,29 +119,7 @@ function SpotJs () {
           spotjs.pendingEvents.push(data);
           continue;
         }
-        if (data.type) {
-          switch (data.type) {
-            case "identify":
-              identify(data.params, true);
-              processEvent(data);
-              break;
-            case "signin":
-              signIn(data.params, true);
-              processEvent(data);
-              break;
-            case "signout":
-              signOut();
-              break;
-            case "optin":
-              setOptin(true);
-              break;
-            case "optout":
-              setOptin(false);
-              break;
-            default:
-              processEvent(data);
-          }
-        }
+        processEvent(data);
       }
     }
   }
@@ -170,48 +148,82 @@ function SpotJs () {
     return false; // no errors = valid
   }
 
+  // Handle any special event type
+  let preprocessEvent = function (data) {
+    let sendEvent = true;
+    if (user.dnt === 1) {
+      // do not track - do not send events
+      sendEvent = false;
+    }
+    switch (data.type) {
+      case "identify":
+        identify(data.params, true);
+        break;
+      case "signin":
+        signIn(data.params, true);
+        sendEvent = true;
+        break;
+      case "signout":
+        signOut();
+        break;
+      case "optin":
+        setOptin(true);
+        sendEvent = true;
+        break;
+      case "optout":
+        setOptin(false);
+        break;
+      default:
+        break;
+    }
+    return sendEvent;
+  }
+
   // Process a business event, such as a page visit, add to cart, etc.
   let processEvent = function (data) {
+    let sendEvent = preprocessEvent(data);
+    if (!sendEvent) {
+      log("spotjs.processEvent exiting");
+    }
     log("spotjs.processEvent data =", data);
     if (!data.type) {
       log("spotjs.processEvent error - data.type is required");
     }
-    data.params = data.params || {};
+    // User
     processUser(data);
-    if (!data.iso_time) {
-      let dateobj = new Date();
-      data.iso_time = dateobj.toISOString();
+    if (!user.ut) { // anon
+      evt.client.identifier.id = user.ut;
+      evt.client.identifier.id_field = user.utAttr;
+      evt.client.visitor = true;
     }
+    // Construct Event
     var evt = {
-      "event": { "type": data.type, "iso_time": data.iso_time },
-      "client": { "identifier": { "id": "", "id_field": "" } },
+      "event": { "type": data.type, "iso_time": data.iso_time, "params_json": {} },
+      "client": { "identifier": { "id": user.ut, "id_field": user.utAttr } },
       "campaign": data.campaign || config.defaultCampaign
     };
-    if (data.params.subtype) {
-      evt.event.subtype = data.params.subtype;
+    if (!evt.event.iso_time) {
+      let dateobj = new Date();
+      evt.event.iso_time = dateobj.toISOString();
     }
-    evt.client.identifier.id = user.known ? user.ut : user.dt;
-    evt.client.identifier.id_field = user.known ? user.utAttr : user.dtAttr;
-    evt.client.identifier.known = user.known;
-    if (Object.keys(data.params).length) {
-      //evt.event.params = data.params;
+    // Event JSON Params
+    if (data.params && Object.keys(data.params).length) {
       evt.event.params_json = data.params;
+      if (data.params.subtype) {
+        evt.event.subtype = data.params.subtype;
+      }
     }
-    data.update_attributes = data.update_attributes || {};
-    Object.apply(data.update_attributes, user.update_attributes);
-    if (data.update_attributes.visitor === undefined && user.visitor !== null) {
-      data.update_attributes.visitor = user.visitor;
+    // Update attributes
+    let update_attributes = data.update_attributes || {};
+    Object.apply(update_attributes, user.update_attributes);
+    if (evt.client.visitor) {
+      update_attributes.visitor = true;
     }
-    if (Object.keys(data.update_attributes).length) {
-      evt.callback = { "update_attributes": data.update_attributes };
+    if (Object.keys(update_attributes).length) {
+      evt.callback = { "update_attributes": update_attributes };
     }
-    log("spotjs.processEvent type =", evt.event.type, " subtype =", evt.event.subtype, " evt =", evt);
 
-    if (user.dnt === 1) {
-      // do not track - do not send events
-      log("dnt enabled, abort sending event");
-      return;
-    }
+    log("spotjs.processEvent", evt.event.type, "/", evt.event.subtype, " evt=", evt);
     sendEvent(evt);
   }
 
@@ -281,14 +293,6 @@ function SpotJs () {
     getUserCookie("dnt", null, data);
     getUserCookie("dtAttr", config.dtAttr, data);
     getUserCookie("utAttr", config.utAttr, data);
-    if (user.ut) { // known
-      user.known = true;
-      user.visitor = null;
-    }
-    else { // anonymous
-      user.known = false;
-      user.visitor = true;
-    }
   }
 
   let getUserCookie = function (key, defaultVal, data) {
