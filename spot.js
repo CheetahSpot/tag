@@ -349,13 +349,16 @@ function SpotJs () {
   let getCookie = function (name) {
     var v = document.cookie.match('(^|;) ?'+config.cookiePrefix+name+'=([^;]*)(;|$)');
     let v2 = v ? v[2] : null;
-    return v2 === "null" ? null : v2;
+    if (v2 === "null" || v2 === "********") {
+      v2 = null;
+    }
+    return v2;
   }
 
   let setCookie = function (name, value) {
     if (isPersonalInfo(name, value)) {
-      logError("spotjs not setting cookie for", name, "- value looks like personal info");
-      return;
+      logError("spotjs masking cookie value for", name, "- value looks like personal info");
+      value = "********";
     }
     let c = config.cookiePrefix+name+'='+value;
     c += '; SameSite=None';
