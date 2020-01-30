@@ -76,7 +76,9 @@ function SpotJs () {
   let signOut = spotjs.signout = function () {
     // clear user token
     user.ut = "";
+    user.utAttr = config.utAttr;
     setCookie("ut", user.ut);
+    setCookie("utAttr", user.utAttr);
   }
 
   // @public setOptin
