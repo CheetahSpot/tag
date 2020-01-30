@@ -18,7 +18,8 @@ function SpotJs () {
     dataLayerId: 'spot_data',
     cookiePrefix: 'spot_',
     cookieMaxAge: 60*60*24*365, // 1y
-    useNavigatorBeacon: false,
+    useNavigatorBeacon: false, // not supported in IE
+    logLevel: 1, // 0:none, 1:error, 2:info, 3:trace
     eventParamKeys: {
       "subtype": "event_subtype",
       "source": "event_source",
@@ -28,8 +29,7 @@ function SpotJs () {
       "click_link_tags": "click_link_tags",
       "referrer": "web_event_url_referrer",
       "user_agent": "user_agent_raw" },
-    autoEvents: [ { type:"web", params: { subtype: "visit", url: "{href}", referrer: "{referrer}"} } ],
-    debug: 1 // set debug=2 for trace
+    autoEvents: [ { type:"web", params: { subtype: "visit", url: "{href}", referrer: "{referrer}"} } ]
   };
 
   // @public user object
@@ -45,10 +45,10 @@ function SpotJs () {
     pendingEvents: []
   };
 
-  // log wrapper
-  let log = config.debug ? console.log.bind(window.console) : function(){};
-  let logTrace = config.debug > 1 ? console.log.bind(window.console) : function(){};
-  let logError = console.log.bind(window.console);
+  // logger
+  let logError = config.logLevel >=1 ? console.logError.bind(window.console) : function(){};
+  let logInfo  = config.logLevel >=2 ? console.logInfo.bind(window.console) : function(){};
+  let logTrace = config.logLevel >=3 ? console.logTrace.bind(window.console) : function(){};
 
   // @public track
   // Helper function to push an event to the data layer
@@ -211,7 +211,7 @@ function SpotJs () {
     let send = preprocessEvent(data);
     processUser(data);
     if (!send) {
-      log("spotjs.processEvent - do not track");
+      logInfo("spotjs.processEvent - do not track");
       return;
     }
     logTrace("spotjs.processEvent data =", data);
@@ -273,12 +273,12 @@ function SpotJs () {
       xhr.addEventListener("readystatechange", function() {
         spotjs.sentEvents[evtId].readyState = this.readyState;
         if(this.readyState === 4) {
-          log("spotjs", evtId, "received response =", this.responseText);
+          logInfo("spotjs", evtId, "received response text =", this.responseText);
         }
       });
       let xhrBody = JSON.stringify(evt);
-      spotjs.sentEvents[evtId] = { "evt": evt, "readyState": null, "xhr": xhr };
-      log("spotjs", evtId, "sending request =", xhrBody);
+      spotjs.sentEvents[evtId] = { "evt": evt, "xhr": xhr };
+      logInfo("spotjs", evtId, "sending request body =", xhrBody);
       xhr.send(xhrBody);
     }
   }
@@ -305,7 +305,7 @@ function SpotJs () {
         // Assume user_token is the default attribute
         user2.utAttr = config.utAttr;
       }
-      log("spotjs.detectUser identity user2 = ", user2);
+      logInfo("spotjs.detectUser identity user2 = ", user2);
       identify(user2);
     }
   }
@@ -407,7 +407,7 @@ function SpotJs () {
   // Finally, process any existing events
   processDataLayer();
 
-  log(spotjs.name, "ready");
+  logInfo(spotjs.name, "ready");
   return spotjs;
 }
 
