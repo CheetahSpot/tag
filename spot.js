@@ -182,6 +182,7 @@ function SpotJs () {
   // Process a business event, such as a page visit, add to cart, etc.
   let processEvent = function (data) {
     let send = preprocessEvent(data);
+    processUser(data);
     if (!send) {
       log("spotjs.processEvent exiting");
     }
@@ -189,19 +190,17 @@ function SpotJs () {
     if (!data.type) {
       log("spotjs.processEvent error - data.type is required");
     }
-    // User
-    processUser(data);
-    if (!user.ut) { // anon
-      evt.client.identifier.id = user.ut;
-      evt.client.identifier.id_field = user.utAttr;
-      evt.client.visitor = true;
-    }
     // Construct Event
     var evt = {
       "event": { "type": data.type, "iso_time": data.iso_time, "params_json": {} },
       "client": { "identifier": { "id": user.ut, "id_field": user.utAttr } },
       "campaign": data.campaign || config.defaultCampaign
     };
+    if (!user.ut) { // anon
+      evt.client.identifier.id = user.ut;
+      evt.client.identifier.id_field = user.utAttr;
+      evt.client.visitor = true;
+    }
     if (!evt.event.iso_time) {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
