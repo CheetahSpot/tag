@@ -342,7 +342,7 @@ function SpotJs () {
     c += '; Max-Age='+config.cookieMaxAge;
     c += "; Path=/";
     document.cookie = c;
-    log("spotjs.setCookie c=", c);
+    //log("spotjs.setCookie c=", c);
   }
 
   function getParam(name, url) {
