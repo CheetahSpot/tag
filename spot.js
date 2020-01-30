@@ -150,10 +150,10 @@ function SpotJs () {
 
   // Handle any special event type
   let preprocessEvent = function (data) {
-    let sendEvent = true;
+    let send = true;
     if (user.dnt === 1) {
       // do not track - do not send events
-      sendEvent = false;
+      send = false;
     }
     switch (data.type) {
       case "identify":
@@ -161,14 +161,14 @@ function SpotJs () {
         break;
       case "signin":
         signIn(data.params, true);
-        sendEvent = true;
+        send = true;
         break;
       case "signout":
         signOut();
         break;
       case "optin":
         setOptin(true);
-        sendEvent = true;
+        send = true;
         break;
       case "optout":
         setOptin(false);
@@ -176,13 +176,13 @@ function SpotJs () {
       default:
         break;
     }
-    return sendEvent;
+    return send;
   }
 
   // Process a business event, such as a page visit, add to cart, etc.
   let processEvent = function (data) {
-    let sendEvent = preprocessEvent(data);
-    if (!sendEvent) {
+    let send = preprocessEvent(data);
+    if (!send) {
       log("spotjs.processEvent exiting");
     }
     log("spotjs.processEvent data =", data);
