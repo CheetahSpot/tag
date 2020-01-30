@@ -314,7 +314,7 @@ function SpotJs () {
     }
     let cookieVal2 = user[key];
     // Save the value as a cookie, but only if necessary
-    if (cookieVal2 !== undefined && cookieVal2 !== cookieVal && (cookieVal2 !== defaultVal && cookieVal === null)) {
+    if (cookieVal2 !== undefined && cookieVal2 !== cookieVal && (cookieVal2 !== defaultVal && !cookieVal)) {
       setCookie(key, cookieVal2);
     }
   }
