@@ -349,16 +349,15 @@ function SpotJs () {
   let getCookie = function (name) {
     var v = document.cookie.match('(^|;) ?'+config.cookiePrefix+name+'=([^;]*)(;|$)');
     let v2 = v ? v[2] : null;
-    if (v2 === "null" || v2 === "********") {
+    if (v2 === "null" || v2 === "redacted") {
       v2 = null;
     }
     return v2;
   }
 
   let setCookie = function (name, value) {
-    if (isPersonalInfo(name, value)) {
-      logError("spotjs masking cookie value for", name, "- value looks like personal info");
-      value = "********";
+    if (isPersonal(name, value)) {
+      value = "redacted";
     }
     let c = config.cookiePrefix+name+'='+value;
     c += '; SameSite=None';
@@ -370,7 +369,7 @@ function SpotJs () {
   }
 
   // Detect if a value looks like personal info
-  let isPersonalInfo = function (name, val) {
+  let isPersonal = function (name, val) {
     // look for possible email address
     return /^.+@.+\..+$/.test(val);
   }
