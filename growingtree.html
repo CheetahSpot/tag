@@ -12,7 +12,7 @@
         spot_data.push(evt);
       }
       // Push config to data layer
-      pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } });
+      pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7" } });
       //pushEvent({ apiHost: "https://api-cust100.demostellar.com", apiAuth: "Bearer 9d93dd6d82531de07978181313a29978bab3c4c0a3112cbe527e10cd1c3add8d:27ceca09315271167c9c88859fe02965716d7f8d844055eb354dff659cc569d9" });
       // Push a web visit event to the data layer
       pushEvent({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
@@ -22,17 +22,18 @@
         "add_to_cart":      { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
         "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' }, "after": "afterRemoveFromCart" },
         "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' }, "before": "beforeCartCheckout", "after": "afterCartCheckout" },
-        "identify":         { type: "identify", "params": { 'ut': 'UsrTok00001', 'utAttr': 'user_token' } },
-        "email_identify":   { type: "identify", "params": { 'ut': 'susan@example.com', 'utAttr': 'email' } },
-        "signin":           { type: "signin", "params": { 'ut': 'IntId00002', 'utAttr': 'integration_id' } },
+        "identify":         { type: "identify", "params": { 'ut': 'Paul000002_usrtok', 'utAttr': 'user_token' } },
+        "email_identify":   { type: "identify", "params": { 'ut': 'paul@example.com', 'utAttr': 'email' }, "after": "afterSignin" },
+        "signin":           { type: "signin", "params": { 'ut': 'Paul000001_intid', 'utAttr': 'integration_id', "first_name": "Paul" } },
         "signout":          { type: "signout" },
         "optin":            { type: "optin" },
         "optout":           { type: "optout" }
       }
 
       function afterRemoveFromCart (data) { alert("item removed"); }
-      function beforeCheckout (data) { return confirm("confirm checkout") }
-      function afterCheckout (data) { alert("thanks for your purchase!") }
+      function beforeCartCheckout (data) { return confirm("confirm checkout") }
+      function afterCartCheckout (data) { alert("thanks for your purchase!") }
+      function afterSignin (data) { alert("welcome "+data.params.first_name+"!"); }
 
       // Trigger on button click
       document.addEventListener('click', function (event) {

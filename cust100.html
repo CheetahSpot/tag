@@ -12,7 +12,7 @@
         spot_data.push(evt);
       }
       // Push config to data layer
-      //pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7:6d228e44e479cca02776f2d8b5a0f191e09a0e0fe7bdfa84b7a43152820d9403" } });
+      //pushEvent({ "config": { apiHost: "https://growingtree.demostellar.com", apiAuth: "Bearer 7ed9828b0021035c22f1b142db14704bc4eb95b11f93d973bd9c9b698cf736e4:3e1824ff3ec2d7e2e20c13fa00d60d4dbc4a965d5fd48a1f4887338759c1d8e7" } });
       pushEvent({ apiHost: "https://api-cust100.demostellar.com", apiAuth: "Bearer 9d93dd6d82531de07978181313a29978bab3c4c0a3112cbe527e10cd1c3add8d:27ceca09315271167c9c88859fe02965716d7f8d844055eb354dff659cc569d9" });
       // Push a web visit event to the data layer
       pushEvent({ "type": 'web', "params": { "subtype": "visit", "url": document.location.href, "referrer": document.referrer } });
@@ -20,14 +20,20 @@
       // Define some events I want to capture
       var customEvents = {
         "add_to_cart":      { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
-        "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' } },
-        "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' } },
-        "identify":         { type: "identify", "params": { 'ut': 'UsrTok00001', 'utAttr': 'user_token' } },
-        "signin":           { type: "signin", "params": { 'ut': 'IntId00002', 'utAttr': 'integration_id' } },
+        "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' }, "after": "afterRemoveFromCart" },
+        "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' }, "before": "beforeCartCheckout", "after": "afterCartCheckout" },
+        "identify":         { type: "identify", "params": { 'ut': 'Paul000002_usrtok', 'utAttr': 'user_token' } },
+        "email_identify":   { type: "identify", "params": { 'ut': 'paul@example.com', 'utAttr': 'email' }, "after": "afterSignin" },
+        "signin":           { type: "signin", "params": { 'ut': 'Paul000001_intid', 'utAttr': 'integration_id', "first_name": "Paul" } },
         "signout":          { type: "signout" },
         "optin":            { type: "optin" },
         "optout":           { type: "optout" }
       }
+
+      function afterRemoveFromCart (data) { alert("item removed"); }
+      function beforeCartCheckout (data) { return confirm("confirm checkout") }
+      function afterCartCheckout (data) { alert("thanks for your purchase!") }
+      function afterSignin (data) { alert("welcome "+data.params.first_name+"!"); }
 
       // Trigger on button click
       document.addEventListener('click', function (event) {
@@ -88,8 +94,7 @@
         <h1>Spot Test - Inline</h1>
         <p class="lead">This is a test of Spot using inline code.
         View page source to see the code.
-        <br><br>
-        The first event is pushed on page visit:</p>
+        <p class="lead">The first event is pushed on page visit:</p>
         <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
       </div>
 
@@ -108,9 +113,12 @@
 
       <div class="jumbotron">
         <h1>User Identification</h1>
-        <p class="lead">If a user signs in or is otherwise identified, a "match" is made between their anonymous and known records.</p>
+        <p class="lead">Spot creates a unique device_token for the browser if needed, stored in the "spot_dt" cookie.</p>
+        <p class="lead">If a user signs in or is otherwise identified, an "identify" event is submitted with the user identifier.</p>
+        <p class="lead">A user identifier is also stored in the "spot_us" cookie, although the value "redacted" is stored in place of any value that appears to be an email address.</p>
         <p>
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
+          <a class="btn btn-lg btn-info" href="#" id="email_identify" role="button" onclick="">Email Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
@@ -128,10 +136,10 @@
         <p>
         Tracking is enabled by default.
         An optin or optout Event out sets a Do Not Track cookie "spot_dnt".  Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".  </p>
-        <p>After Do Not Track is enabled (dnt=1) Events are blocked and not sent to the server. Optin/optout does not affect other cookies.  </p>
+        <p>After Do Not Track is enabled ("spot_dnt=1") Events are blocked and not sent to the server. Optin/optout does not affect other cookies.  </p>
       </div>
     
     </div>
   </body>
 </html>
-      
+
