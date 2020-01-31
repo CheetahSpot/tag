@@ -130,8 +130,9 @@ function SpotJs () {
           let proceed = window[data.before](data);
           if (!proceed) {
             if (data.cancel && typeof window[data.cancel] === "function") {
-            window[data.cancel](data);
-            continue;
+              window[data.cancel](data);
+              continue;
+            }
           }
         }
         if (data.type) {
