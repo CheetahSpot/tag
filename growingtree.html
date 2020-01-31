@@ -22,9 +22,9 @@
         "add_to_cart":      { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
         "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' }, "after": "afterRemoveFromCart" },
         "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' }, "before": "beforeCartCheckout", "after": "afterCartCheckout", "cancel": "cancelCartCheckout" },
-        "identify":         { type: "identify", "params": { 'ut': 'Paul000002_usrtok', 'utAttr': 'user_token' } },
-        "email_identify":   { type: "identify", "params": { 'ut': 'paul@example.com', 'utAttr': 'email' }, "after": "afterSignin" },
-        "signin":           { type: "signin", "params": { 'ut': 'Paul000001_intid', 'utAttr': 'integration_id', "first_name": "Paul" } },
+        "identify":         { type: "identify", "params": { 'ut': 'Paul000002_usrtok', 'uta': 'user_token' } },
+        "email_identify":   { type: "identify", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterSignin" },
+        "signin":           { type: "signin", "params": { 'ut': 'Paul000001_intid', 'uta': 'integration_id', "first_name": "Paul" } },
         "signout":          { type: "signout" },
         "optin":            { type: "optin" },
         "optout":           { type: "optout" }
@@ -125,16 +125,16 @@
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
         <p class="lead">A "spot_user" querystring parameter or javascript variable can be used to identify the user.
-        The value of spot_user is a JSON object with parameters "ut" ("user_token") and optionally "utAttr" (defaults to "user_token").
+        The value of spot_user is a JSON object with parameters "ut" ("user_token") and optionally "uta" (defaults to "user_token").
         The value can be base64 encoded or plain text.</p>
         <p>Querystring parameter:</p>
-        <p><a href='?spot_user={"ut":"paul00002_email"}'>?spot_user={"ut":"paul00002_email"}</a></p>
-        <p><a href='?spot_user=eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9'>?spot_user=eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9</a></p>
-        <p><a href='?spot_user={"ut":"paul00003_email","utAttr":"integration_id"}'>?spot_user={"ut":"paul00002_email","utAttr":"integration_id"}</a></p>
-        <p><a href='?spot_user={"ut":"paul00004_email","utAttr":"integration4_id"}'>?spot_user={"ut":"paul00002_email","utAttr":"integration_id"}</a></p>
+        <p><a href='?spot_user={"ut":"4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0"}'>?spot_user={"ut":"4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0"}</a></p>
+        <p><a href='?spot_user=eyJ1dCI6IjRkOGY5ZTdhLTNjY2ItNGIyYi04Mjk3LTYzNzJmZDNiZGZlMCJ9'>?spot_user=eyJ1dCI6IjRkOGY5ZTdhLTNjY2ItNGIyYi04Mjk3LTYzNzJmZDNiZGZlMCJ9</a></p>
+        <p><a href='?spot_user={"ut":"INT00001","uta":"integration_id"}'>?spot_user={"ut":"INT00001","uta":"integration_id"}</a></p>
+        <p><a href='?spot_user={"ut":"INT99999","uta":"integration4_id"}'>?spot_user={"ut":"INT99999","uta":"integration4_id"}</a></p>
         <p>JavaScript variable:</p>
-        <p><code>var spot_user = {"ut":"paul00002_email"};</code></p>
-        <p><code>var spot_user = "eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9";</code></p>
+        <p><code>var spot_user = {"ut":"4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0"};</code></p>
+        <p><code>var spot_user = "eyJ1dCI6IjRkOGY5ZTdhLTNjY2ItNGIyYi04Mjk3LTYzNzJmZDNiZGZlMCJ9";</code></p>
       </div>
 
       <div class="jumbotron">
@@ -178,7 +178,7 @@
           Spot can read a user_token from the querystring or javascript variable.
           The recommended usage is the EDP user_token attribute, which is a random UUID not based on the member_id or customer db id
           In addition, Spot also supports any standard EDP identifier field (e.g. integration_id), in which case the value might not be a UUID.</p>
-        <h3>User Token Attribute ("spot_utAttr")</h3>
+        <h3>User Token Attribute ("spot_uta")</h3>
         <p class="lead">
           This cookie associates the User Token value with an EDP member attribute. The standard EDP member attribute for storing a device token is "user_token", but any other identifier field can be used, such as: integration_id, integration2_id, email, etc.</p>
         <h3>Do Not Track ("spot_dnt")</h3>
