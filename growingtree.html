@@ -107,13 +107,18 @@
 
       <div class="jumbotron">
         <h1>User Identification</h1>
-        <p class="lead">If a user signs in or is otherwise identified, an "identify" event is submitted with the user identifier.</p>
-        <p class="lead">A user identifier is also stored in the "spot_ut" cookie.
-        Cookie values that appear to be email addresses will be redacted (the cookie value set to "redacted").</p>
+        <p class="lead">If a user signs in or is otherwise identified, the identifier is stored in the "spot_ut" cookie, and "identify" event is submitted matching the user identifier to the device_token.</p>
+        <p class="lead">The user identifier is used for events instead of device_token.</p>
         <p>
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
-          <a class="btn btn-lg btn-info" href="#" id="email_identify" role="button" onclick="">Email Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
+        </p>
+        <p class="lead">Email is supported as identifier but is not preferred due to privacy considerations.
+        If an identifier appears to be an email address the cookie will be saved as the string "redacted", 
+        so on subsequent page loads the user will no longer be identified.
+        </p>
+        <p>
+          <a class="btn btn-lg btn-info" href="#" id="email_identify" role="button" onclick="">Email Identify</a>
         </p>
         <p class="lead">The user token cookie is redacted on a "signout" event.</p>
         <p>
