@@ -23,17 +23,17 @@ function SpotJs () {
     eventParamKeys: {
       "subtype": "event_subtype",
       "source": "event_source",
-      "url": "click_link_url",
+      "url": "web_event_url",
+      "referrer": "web_event_url_referrer",
       "click_link_url": "click_link_url",
       "click_link_name": "click_link_name",
       "click_link_tags": "click_link_tags",
-      "referrer": "web_event_url_referrer",
       "user_agent": "user_agent_raw" },
     autoEvents: [ { type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} } ]
   };
 
   // @public user object
-  let user = { dt: null, ut: null, optin: null, dnt: null, update_attributes: {} };
+  let user = { dt: null, ut: null, uta: config.utAttr, optin: null, dnt: null, update_attributes: {} };
 
   // @public return object
   let spotjs = {
@@ -234,9 +234,10 @@ function SpotJs () {
     // Construct Event
     var evt = {
       "event": { "type": data.type, "iso_time": data.iso_time },
-      "client": { "identifier": { "id": user.ut, "id_field": user.utAttr, "device_token": user.dt } },
+      "client": { "identifier": { "id": user.ut, "id_field": user.utAttr } },
       "campaign": data.campaign || config.defaultCampaign
     };
+    evt.client.identifier[config.dtAttr] = user.dt; // TODO - finalize location in api signature
     if (!evt.event.iso_time) {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
@@ -262,7 +263,7 @@ function SpotJs () {
     // Anonymous
     if (!evt.client.identifier.id) {
       evt.client.identifier.id = user.dt;
-      evt.client.identifier.id_field = user.dtAttr;
+      evt.client.identifier.id_field = config.dtAttr;
       update_attributes.visitor = true;
     }
     if (Object.keys(update_attributes).length) {
@@ -332,8 +333,7 @@ function SpotJs () {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
-    getUserCookie("dtAttr", config.dtAttr, data);
-    getUserCookie("utAttr", config.utAttr, data);
+    getUserCookie("uta", config.utAttr, data);
   }
 
   let getUserCookie = function (key, defaultVal, data) {
