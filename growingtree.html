@@ -125,12 +125,13 @@
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
         <p class="lead">A "spot_user" querystring parameter or javascript variable can be used to identify the user.
-        The value of spot_user is a JSON object with parameters "ut" (user_token) and optionally "utAttr" (user_token attribute).
+        The value of spot_user is a JSON object with parameters "ut" ("user_token") and optionally "utAttr" (defaults to "user_token").
         The value can be base64 encoded or plain text.</p>
         <p>Querystring parameter:</p>
         <p><a href='?spot_user={"ut":"paul00002_email"}'>?spot_user={"ut":"paul00002_email"}</a></p>
         <p><a href='?spot_user=eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9'>?spot_user=eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9</a></p>
-        <p><a href='?spot_user={"ut":"paul00002_email","utAttr":"integration_id"}'>?spot_user={"ut":"paul00002_email","utAttr":"integration_id"}</a></p>
+        <p><a href='?spot_user={"ut":"paul00003_email","utAttr":"integration_id"}'>?spot_user={"ut":"paul00002_email","utAttr":"integration_id"}</a></p>
+        <p><a href='?spot_user={"ut":"paul00004_email","utAttr":"integration4_id"}'>?spot_user={"ut":"paul00002_email","utAttr":"integration_id"}</a></p>
         <p>JavaScript variable:</p>
         <p><code>var spot_user = {"ut":"paul00002_email"};</code></p>
         <p><code>var spot_user = "eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9";</code></p>
