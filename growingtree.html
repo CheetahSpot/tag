@@ -170,23 +170,25 @@
         <h1>Cookies</h1>
         <p class="lead">Spot sets a small number of cookies, listed below.
         All Spot cookies are first-party and not sent to Cheetah servers.</p>
+        <h3>Device Token ("spot_dt")</h3>
         <p class="lead">
-          <dl>
-            <dt>Device Token ("spot_dt")</p>
-            <dd>Spot generates a random UUID device_token for the browser. The value is a randomly generated unique 128-bit number (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0".</dd>
-            <dt>User Token ("spot_ut")</p>
-            <dd>Spot can read a user_token from the querystring or javascript variable.
-            The recommended usage is the EDP user_token attribute, which is a random UUID not based on the member_id or customer db id
-            In addition, Spot also supports any standard EDP identifier field (e.g. integration_id), in which case the value might not be a UUID.
-            A user_token a UUID for the browser. The value is a unique 128-bit number (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0".</dd>
-            <dt>User Token Attribute ("spot_utAttr")</p>
-            <dd>This cookie associates the User Token value with an EDP member attribute. The standard EDP member attribute for storing a device token is "user_token", but any other identifier field can be used, such as: integration_id, integration2_id, email, etc.</dd>
-            <dt>Do Not Track ("spot_dnt")</p>
-            <dd>Spot preserves user's optin or optout choice by setting a Do Not Track cookie "spot_dnt=1". Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".
-            If Do Not Track is enabled ("spot_dnt=1") Events are blocked and not sent to the server. </dd>
-          </dl>
+          Spot generates a random UUID device_token for the browser. The value is a randomly generated unique 128-bit number (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0".</p>
+        <h3>User Token ("spot_ut")</h3>
+        <p class="lead">
+          Spot can read a user_token from the querystring or javascript variable.
+          The recommended usage is the EDP user_token attribute, which is a random UUID not based on the member_id or customer db id
+          In addition, Spot also supports any standard EDP identifier field (e.g. integration_id), in which case the value might not be a UUID.</p>
+        <h3>User Token Attribute ("spot_utAttr")</h3>
+        <p class="lead">
+          This cookie associates the User Token value with an EDP member attribute. The standard EDP member attribute for storing a device token is "user_token", but any other identifier field can be used, such as: integration_id, integration2_id, email, etc.</p>
+        <h3>Do Not Track ("spot_dnt")</h3>
+        <p class="lead">
+          Spot preserves user's optin or optout choice by setting a Do Not Track cookie "spot_dnt=1". Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".
+          If Do Not Track is enabled ("spot_dnt=1") Events are blocked and not sent to the server. </p>
         </p>
-        <p class="lead">Spot attempts to detect personal information such as email addresses and will avoid saving those into cookies.
+        <h4>Personal Information</h4>
+        <p class="lead">
+        Spot attempts to detect personal information such as email addresses and will avoid saving those into cookies.
         So if a customer were to send an email address as the user_token in a querystring parameter (which is not recommended but technically possibl),
         Spot would use the value for submitting events but never store it as a cookie.</p>
       </div>
