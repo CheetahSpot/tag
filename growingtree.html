@@ -99,7 +99,8 @@
       <div class="jumbotron">
         <h1>Visitors</h1>
         <p class="lead">Spot automatically creates a unique device_token for the browser on first visit.
-        This is stored in the "spot_dt" cookie and will identify the device even if the user is subsequently identified.</p>
+        This is stored in the "spot_dt" cookie and will identify the device even if the user is subsequently identified.
+        A device token is a unique 128-bit number generated UUID (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0".</p>
         <p class="lead">Spot can automatically submit an "web visit" Event for the page visit, or you push a custom event to the data layer:</p>
         <code>spot_data.push({ type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code>
         <p class="lead">An anonymous event for a device_token will result in a new member record.</p>
@@ -112,7 +113,7 @@
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
         </p>
-        <p class="lead">Email is supported as identifier but is not preferred due to privacy considerations.
+        <p class="lead">Email is supported as identifier but is not preferred out of respect for user privacy.
         If an identifier appears to be an email address the cookie will be saved as the string "redacted", 
         so on subsequent page loads the user will no longer be identified.
         </p>
