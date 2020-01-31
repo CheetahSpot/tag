@@ -191,7 +191,7 @@ function SpotJs () {
     return send;
   }
 
-  let formatEventParam = function (key, val) {
+  let formatEventParam = function (eventType, key, val) {
     switch (val) {
       case "{href}":
         return document.location.href;
