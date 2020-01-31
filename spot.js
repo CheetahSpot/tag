@@ -126,8 +126,18 @@ function SpotJs () {
           spotjs.pendingEvents.push(data);
           continue;
         }
+        if (data.before && typeof window[data.before] === "function") {
+          let beforeOk = window[data.before](data);
+          if (!beforeOk) {
+            logTrace("spotjs.processDataLayer exiting due to before()");
+            continue;
+          }
+        }
         if (data.type) {
           processEvent(data);
+        }
+        if (data.after && typeof window[data.after] === "function") {
+          window[data.after](data);
         }
       }
     }
