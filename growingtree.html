@@ -102,6 +102,7 @@
         This is stored in the "spot_dt" cookie and will identify the device even if the user is subsequently identified.</p>
         <p class="lead">Spot can automatically submit an "web visit" Event for the page visit, or you push a custom event to the data layer:</p>
         <code>spot_data.push({ type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code>
+        <p class="lead">An anonymous event for a device_token will result in a new member record.</p>
       </div>
 
       <div class="jumbotron">
