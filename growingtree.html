@@ -110,7 +110,7 @@
         <h1>User Identification</h1>
         <p class="lead">Spot creates a unique device_token for the browser if needed, stored in the "spot_dt" cookie.</p>
         <p class="lead">If a user signs in or is otherwise identified, an "identify" event is submitted with the user identifier.</p>
-        <p class="lead">A user identifier is also stored in the "spot_us" cookie, unless it appears to be personal info (i.e. email address).</p>
+        <p class="lead">A user identifier is also stored in the "spot_us" cookie, although the value "redacted" is stored in place of any value that appears to be an email address.</p>
         <p>
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
           <a class="btn btn-lg btn-info" href="#" id="email_identify" role="button" onclick="">Email Identify</a>
@@ -131,7 +131,7 @@
         <p>
         Tracking is enabled by default.
         An optin or optout Event out sets a Do Not Track cookie "spot_dnt".  Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".  </p>
-        <p>After Do Not Track is enabled (dnt=1) Events are blocked and not sent to the server. Optin/optout does not affect other cookies.  </p>
+        <p>After Do Not Track is enabled ("spot_dnt=1") Events are blocked and not sent to the server. Optin/optout does not affect other cookies.  </p>
       </div>
     
     </div>
