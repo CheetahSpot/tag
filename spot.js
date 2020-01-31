@@ -127,9 +127,10 @@ function SpotJs () {
           continue;
         }
         if (data.before && typeof window[data.before] === "function") {
-          let beforeOk = window[data.before](data);
-          if (!beforeOk) {
-            logTrace("spotjs.processDataLayer exiting due to before()");
+          let proceed = window[data.before](data);
+          if (!proceed) {
+            if (data.cancel && typeof window[data.cancel] === "function") {
+            window[data.cancel](data);
             continue;
           }
         }
