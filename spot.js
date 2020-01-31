@@ -10,8 +10,8 @@ function SpotJs () {
     apiAuth: null,
     apiHost: null,
     defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
-    dtAttr: 'device_token',
-    utAttr: 'user_token',
+    dta: 'device_token',
+    uta: 'user_token',
     apiEndpoint: '/edp/api/event',
     apiContentType: 'application/json',
     userParam: 'spot_user',
@@ -33,7 +33,7 @@ function SpotJs () {
   };
 
   // @public user object
-  let user = { dt: null, ut: null, uta: config.utAttr, optin: null, dnt: null, update_attributes: {} };
+  let user = { dt: null, ut: null, uta: config.uta, optin: null, dnt: null, update_attributes: {} };
 
   // @public return object
   let spotjs = {
@@ -78,9 +78,9 @@ function SpotJs () {
   let signOut = spotjs.signout = function () {
     // clear user token
     user.ut = "";
-    user.utAttr = config.utAttr;
+    user.uta = config.uta;
     setCookie("ut", "redacted");
-    setCookie("utAttr", user.utAttr);
+    setCookie("uta", user.uta);
   }
 
   // @public setOptin
@@ -234,10 +234,10 @@ function SpotJs () {
     // Construct Event
     var evt = {
       "event": { "type": data.type, "iso_time": data.iso_time },
-      "client": { "identifier": { "id": user.ut, "id_field": user.utAttr } },
+      "client": { "identifier": { "id": user.ut, "id_field": user.uta } },
       "campaign": data.campaign || config.defaultCampaign
     };
-    evt.client.identifier[config.dtAttr] = user.dt; // TODO - finalize location in api signature
+    evt.client.identifier[config.dta] = user.dt; // TODO - finalize location in api signature
     if (!evt.event.iso_time) {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
@@ -263,7 +263,7 @@ function SpotJs () {
     // Anonymous
     if (!evt.client.identifier.id) {
       evt.client.identifier.id = user.dt;
-      evt.client.identifier.id_field = config.dtAttr;
+      evt.client.identifier.id_field = config.dta;
       update_attributes.visitor = true;
     }
     if (Object.keys(update_attributes).length) {
@@ -318,9 +318,9 @@ function SpotJs () {
       }
     }
     if (user2) {
-      if (user2.ut && !user2.utAttr) {
+      if (user2.ut && !user2.uta) {
         // Assume user_token is the default attribute
-        user2.utAttr = config.utAttr;
+        user2.uta = config.uta;
       }
       logInfo("spotjs.detectUser identity user2 = ", user2);
       // Process this event before any others
@@ -333,7 +333,7 @@ function SpotJs () {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("dnt", null, data);
-    getUserCookie("uta", config.utAttr, data);
+    getUserCookie("uta", config.uta, data);
   }
 
   let getUserCookie = function (key, defaultVal, data) {
