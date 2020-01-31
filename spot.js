@@ -218,7 +218,7 @@ function SpotJs () {
     logTrace("spotjs.processEvent data =", data);
     // Construct Event
     var evt = {
-      "event": { "type": data.type, "iso_time": data.iso_time, "params_json": {} },
+      "event": { "type": data.type, "iso_time": data.iso_time },
       "client": { "identifier": { "id": user.ut, "id_field": user.utAttr, "device_token": user.dt } },
       "campaign": data.campaign || config.defaultCampaign
     };
