@@ -123,6 +123,16 @@
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
+        <p class="lead">A "spot_user" querystring parameter or javascript variable can be used to identify the user.
+        The value of spot_user is a JSON object with parameters "ut" (user_token) and optionally "utAttr" (user_token attribute).
+        The value can be base64 encoded or plain text.</p>
+        <p>Querystring parameter:</p>
+        <code>?spot_user={"ut":"paul00002_email"}</code>
+        <code>?spot_user={"ut":"paul00002_email","utAttr":"integration_id"}</code>
+        <code>?spot_user=eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9</code>
+        <p>JavaScript variable:</p>
+        <code>var spot_user={"ut":"paul00002_email"};</code>
+        <code>var spot_user="eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9";</code>
       </div>
 
       <div class="jumbotron">
