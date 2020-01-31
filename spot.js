@@ -29,7 +29,7 @@ function SpotJs () {
       "click_link_tags": "click_link_tags",
       "referrer": "web_event_url_referrer",
       "user_agent": "user_agent_raw" },
-    autoEvents: [ { type:"web", params: { subtype: "visit", url: "{href}", referrer: "{referrer}"} } ]
+    autoEvents: [ { type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} } ]
   };
 
   // @public user object
@@ -205,11 +205,14 @@ function SpotJs () {
 
   let formatEventParam = function (eventType, key, val) {
     switch (val) {
-      case "{href}":
+      case "{url}":
         return document.location.href;
         break;
       case "{referrer}":
         return document.referrer;
+        break;
+      case "{useragent}":
+        return navigator.userAgent;
         break;
       default:
         return val;

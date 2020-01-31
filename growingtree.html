@@ -93,34 +93,29 @@
 
       <div class="jumbotron">
         <h1>Spot Test - Inline</h1>
-        <p class="lead">This is a test of Spot using inline code.
-        View page source to see the code.
-        <p class="lead">The first event is pushed on page visit:</p>
-        <code>spot_data.push({ "type": "web", "params": { "subtype": "visit",  "url": "https://...", "referrer": "https://..." }})</code>
+        <p class="lead">This is a set of tests for Spot using simple inline code. View page source to see the code.</p>
       </div>
 
       <div class="jumbotron">
-        <h1>Cart</h1>
-        <p class="lead">Click buttons to trigger events to test abandoned cart.
-          Each button pushes an event onto the data layer.
-          Spot detects updates to the data layer and submits EDP Events.
-        </p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="#" id="add_to_cart" role="button">Add to Cart</a>
-          <a class="btn btn-lg btn-info" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
-          <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
-        </p>
+        <h1>Visitors</h1>
+        <p class="lead">Spot automatically creates a unique device_token for the browser on first visit.
+        This is stored in the "spot_dt" cookie and will identify the device even if the user is subsequently identified.</p>
+        <p class="lead">Spot can automatically submit an "web visit" Event for the page visit, or you push a custom event to the data layer:</p>
+        <code>spot_data.push({ type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code>
       </div>
 
       <div class="jumbotron">
         <h1>User Identification</h1>
-        <p class="lead">Spot creates a unique device_token for the browser if needed, stored in the "spot_dt" cookie.</p>
         <p class="lead">If a user signs in or is otherwise identified, an "identify" event is submitted with the user identifier.</p>
-        <p class="lead">A user identifier is also stored in the "spot_us" cookie, although the value "redacted" is stored in place of any value that appears to be an email address.</p>
+        <p class="lead">A user identifier is also stored in the "spot_ut" cookie.
+        Cookie values that appear to be email addresses will be redacted (the cookie value set to "redacted").</p>
         <p>
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
           <a class="btn btn-lg btn-info" href="#" id="email_identify" role="button" onclick="">Email Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
+        </p>
+        <p class="lead">If the web page submits a "signout" event, the user token cookie will be redacted.</p>
+        <p>
           <a class="btn btn-lg btn-warning" href="#" id="signout" role="button">Sign out</a>
         </p>
         <p class="lead">A "spot_user" querystring parameter or javascript variable can be used to identify the user.
@@ -133,6 +128,19 @@
         <p>JavaScript variable:</p>
         <p><code>var spot_user={"ut":"paul00002_email"};</code></p>
         <p><code>var spot_user="eyJ1dCI6InBhdWwwMDAwMl9lbWFpbCJ9";</code></p>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Abandoned Cart</h1>
+        <p class="lead">Click buttons to trigger events to test abandoned cart.
+          Each button pushes an event onto the data layer.
+          Spot detects updates to the data layer and submits EDP Events.
+        </p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="#" id="add_to_cart" role="button">Add to Cart</a>
+          <a class="btn btn-lg btn-info" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
+          <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
+        </p>
       </div>
 
       <div class="jumbotron">
