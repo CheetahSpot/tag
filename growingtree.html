@@ -20,8 +20,8 @@
       // Define some events I want to capture
       var customEvents = {
         "add_to_cart":      { type: "cart", "params": { 'subtype': 'add', 'item': 'sammich' } },
-        "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' }, "after": function (data) { alert("item removed") } },
-        "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' }, "before": function (data) { return confirm("confirm checkout") }, "after": function (data) { alert("thanks for your purchase!") } },
+        "remove_from_cart": { type: "cart", "params": { 'subtype': 'remove', 'item': 'sammich' }, "after": "afterRemoveFromCart" },
+        "cart_checkout":    { type: "cart", "params": { 'subtype': 'checkout', 'item': 'sammich' }, "before": "beforeCartCheckout", "after": "afterCartCheckout" },
         "identify":         { type: "identify", "params": { 'ut': 'UsrTok00001', 'utAttr': 'user_token' } },
         "email_identify":   { type: "identify", "params": { 'ut': 'susan@example.com', 'utAttr': 'email' } },
         "signin":           { type: "signin", "params": { 'ut': 'IntId00002', 'utAttr': 'integration_id' } },
@@ -29,6 +29,10 @@
         "optin":            { type: "optin" },
         "optout":           { type: "optout" }
       }
+
+      function afterRemoveFromCart (data) { alert("item removed"); }
+      function beforeCheckout (data) { return confirm("confirm checkout") }
+      function afterCheckout (data) { alert("thanks for your purchase!") }
 
       // Trigger on button click
       document.addEventListener('click', function (event) {
