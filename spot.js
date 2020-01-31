@@ -3,7 +3,7 @@
  */
 
 function SpotJs () {
-  let version = "0.1.1";
+  let version = "0.1.2";
 
   //@public tag config
   let config = {
