@@ -37,6 +37,11 @@ function SpotJs () {
     autoEvents: [ { type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} } ]
   };
 
+  // Spot Config can be overridden with a javascript variable on the page.
+  if (window.spot_config) {
+    Object.assign(config, spot_config);
+  }
+
   // @public user object
   let user = { dt: null, ut: null, st: null, uta: config.uta, optin: null, dnt: null, update_attributes: {} };
 
@@ -342,7 +347,7 @@ function SpotJs () {
       }
       Object.assign(user, user2);
       logInfo("spotjs.detectUser identity user2 = ", user2);
-      spotjs.pendingvents.push({ "type": "identify", "params": user2 });
+      spotjs.pendingEvents.push({ "type": "identify", "params": user2 });
     }
   }
 
