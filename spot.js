@@ -310,7 +310,7 @@ function SpotJs () {
     let user2 = null;
     if (typeof window[config.params.spot_user] !== "undefined") {
       user2 = window[config.params.spot_user];
-      logTrace("spotjs.detectUser window.user2 = ", user2);
+      logTrace("spotjs spot_user variable = ", user2);
     }
     if (!user2) {
       let param = getParam(config.params.spot_user);
@@ -319,13 +319,14 @@ function SpotJs () {
           param = atob(param);
         }
         user2 = JSON.parse(param);
-        logTrace("spotjs.detectUser ?"+config.params.spot_user+" = ", user2);
+        logTrace("spotjs ?spot_user="+config.params.spot_user+" = ", user2);
       }
     }
-    if (!user) {
+    if (!user2) {
       let param = getParam(config.params.spot_ut);
       if (param) {
         user2 = { ut: param, uta: getParam(config.params.spot_uta) };
+        logTrace("spotjs ?spot_ut = ", user2);
       }
     }
     if (user2) {
@@ -334,8 +335,7 @@ function SpotJs () {
         user2.uta = config.uta;
       }
       logInfo("spotjs.detectUser identity user2 = ", user2);
-      // Process this event before any others
-      spotjs.pendingEvents.push({ "type": "identify", "params": user2 });
+      spotjs.autoEvents.push({ "type": "identify", "params": user2 });
     }
   }
 
@@ -420,10 +420,10 @@ function SpotJs () {
     });
   }
 
-  // Init the array of events to process
-  initDataLayer();
   // Detect user state prior to processing any events
   detectUser();
+  // Init the array of events to process
+  initDataLayer();
   // Finally, process any existing events
   processDataLayer();
 
