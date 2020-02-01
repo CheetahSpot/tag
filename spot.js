@@ -19,7 +19,7 @@ function SpotJs () {
     sessionLength: 60*60*1, // 1h
     cookieMaxAge: 60*60*24*365, // 1y
     logLevel: 2, // 0:none, 1:error, 2:info, 3:trace
-    params: {
+    searchParams: {
       'spot_user': 'spot_user',
       'spot_ut': 'spot_ut',
       'spot_uta': 'spot_uta' },
@@ -99,6 +99,7 @@ function SpotJs () {
     if (!spotjs.dataLayer) {
       spotjs.dataLayer = window[config.dataLayerId] = window[config.dataLayerId] || [];
       if (config.autoEvents !== undefined) {
+        log("pushing autoEvents to dataLayer");
         spotjs.dataLayer.concat(config.autoEvents);
       }
       spotjs.dataLayer.pushSilent = function(e) {
@@ -308,24 +309,24 @@ function SpotJs () {
   // Load the user from querystring or inline variable
   let detectUser = function () {
     let user2 = null;
-    if (typeof window[config.params.spot_user] !== "undefined") {
-      user2 = window[config.params.spot_user];
+    if (typeof window[config.searchParams.spot_user] !== "undefined") {
+      user2 = window[config.searchParams.spot_user];
       logTrace("spotjs spot_user variable = ", user2);
     }
     if (!user2) {
-      let param = getParam(config.params.spot_user);
+      let param = getParam(config.searchParams.spot_user);
       if (param) {
         if (param.indexOf("{") !== 0) {
           param = atob(param);
         }
         user2 = JSON.parse(param);
-        logTrace("spotjs ?spot_user="+config.params.spot_user+" = ", user2);
+        logTrace("spotjs ?spot_user="+config.searchParams.spot_user+" = ", user2);
       }
     }
     if (!user2) {
-      let param = getParam(config.params.spot_ut);
+      let param = getParam(config.searchParams.spot_ut);
       if (param) {
-        user2 = { ut: param, uta: getParam(config.params.spot_uta) };
+        user2 = { ut: param, uta: getParam(config.searchParams.spot_uta) };
         logTrace("spotjs ?spot_ut = ", user2);
       }
     }
@@ -334,6 +335,7 @@ function SpotJs () {
         // Assume user_token is the default attribute
         user2.uta = config.uta;
       }
+      user.assign(user2);
       logInfo("spotjs.detectUser identity user2 = ", user2);
       config.autoEvents.push({ "type": "identify", "params": user2 });
     }
