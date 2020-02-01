@@ -336,7 +336,7 @@ function SpotJs () {
         // Assume user_token is the default attribute
         user2.uta = config.uta;
       }
-      user.assign(user2);
+      Object.assign(user, user2);
       logInfo("spotjs.detectUser identity user2 = ", user2);
       config.autoEvents.push({ "type": "identify", "params": user2 });
     }
