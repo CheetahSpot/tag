@@ -335,7 +335,7 @@ function SpotJs () {
         user2.uta = config.uta;
       }
       logInfo("spotjs.detectUser identity user2 = ", user2);
-      spotjs.autoEvents.push({ "type": "identify", "params": user2 });
+      config.autoEvents.push({ "type": "identify", "params": user2 });
     }
   }
 
