@@ -99,9 +99,13 @@ function SpotJs () {
   let initDataLayer = function () {
     if (!spotjs.dataLayer) {
       spotjs.dataLayer = window[config.dataLayerId] = window[config.dataLayerId] || [];
-      if (config.autoEvents !== undefined) {
-        log("pushing autoEvents to dataLayer");
-        spotjs.dataLayer.concat(config.autoEvents);
+      if (config.autoEvents !== undefined && config.autoEvents.length) {
+        while (config.autoEvents.length) {
+          spotjs.dataLayer.push(config.autoEvents.shift());
+        }
+      }
+      while (spotjs.pendingEvents.length) {
+        spotjs.dataLayer.push(spotjs.pendingEvents.shift());
       }
       spotjs.dataLayer.pushSilent = function(e) {
         Array.prototype.push.call(spotjs.dataLayer, e);
@@ -338,7 +342,7 @@ function SpotJs () {
       }
       Object.assign(user, user2);
       logInfo("spotjs.detectUser identity user2 = ", user2);
-      config.autoEvents.push({ "type": "identify", "params": user2 });
+      spotjs.pendingvents.push({ "type": "identify", "params": user2 });
     }
   }
 
