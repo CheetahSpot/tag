@@ -98,6 +98,7 @@
         <p class="lead">Spot automatically creates a unique device_token for the browser on first visit.
         This is stored in the "spot_dt" cookie and will identify the device even if the user is subsequently identified.
         A device token is a unique 128-bit number generated UUID (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0".</p>
+        <p class="lead">Spot also generates a random UUID device_token for the browser session. The cookie max age is set to the Spot config.sessionLength setting, which default to one hour. All Events submitted include the session token.</p>
         <p class="lead">Spot can automatically submit an "web visit" Event for the page visit, or you push a custom event to the data layer:</p>
         <code>spot_data.push({ type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code>
         <p class="lead">An anonymous event for a device_token will result in a new member record.</p>
@@ -124,14 +125,16 @@
         <p class="lead">A "spot_user" querystring parameter or javascript variable can be used to identify the user.
         The value of spot_user is a JSON object with parameters "ut" ("user_token") and optionally "uta" (defaults to "user_token").
         The value can be base64 encoded or plain text.</p>
-        <p>Querystring parameter:</p>
+        <p>Querystring parameter "spot_user":</p>
         <p><a href='?spot_user={"ut":"4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0"}'>?spot_user={"ut":"4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0"}</a></p>
         <p><a href='?spot_user=eyJ1dCI6IjRkOGY5ZTdhLTNjY2ItNGIyYi04Mjk3LTYzNzJmZDNiZGZlMCJ9'>?spot_user=eyJ1dCI6IjRkOGY5ZTdhLTNjY2ItNGIyYi04Mjk3LTYzNzJmZDNiZGZlMCJ9</a></p>
         <p><a href='?spot_user={"ut":"INT00001","uta":"integration_id"}'>?spot_user={"ut":"INT00001","uta":"integration_id"}</a></p>
         <p><a href='?spot_user={"ut":"INT99999","uta":"integration4_id"}'>?spot_user={"ut":"INT99999","uta":"integration4_id"}</a></p>
+        <p>Querystring parameters "spot_ut" and "spot_uta":</p>
+        <p><a href='?spot_ut=4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0'>?ut=4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0</a></p>
+        <p><a href='?spot_ut=INT00001&spot_uta=integration_id'>?ut=INT00001&uta=integration_id</a></p>
         <p>JavaScript variable:</p>
         <p><code>var spot_user = {"ut":"4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0"};</code></p>
-        <p><code>var spot_user = "eyJ1dCI6IjRkOGY5ZTdhLTNjY2ItNGIyYi04Mjk3LTYzNzJmZDNiZGZlMCJ9";</code></p>
       </div>
 
       <div class="jumbotron">
@@ -169,7 +172,10 @@
         All Spot cookies are first-party and not sent to Cheetah servers.</p>
         <h3>Device Token ("spot_dt")</h3>
         <p class="lead">
-          Spot generates a random UUID device_token for the browser. The value is a randomly generated unique 128-bit number (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0".</p>
+          Spot generates a random UUID device_token for the browser. The value is a randomly generated unique 128-bit number (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0". All events submitted include the device token.</p>
+        <h3>Session Token ("spot_st")</h3>
+        <p class="lead">
+          Spot generates a random UUID device_token for the browser session. The cookie max age is set to the Spot config.sessionLength setting, which default to one hour. All Events submitted include the session token.</p>
         <h3>User Token ("spot_ut")</h3>
         <p class="lead">
           Spot can read a user_token from the querystring or javascript variable.

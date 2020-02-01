@@ -14,12 +14,15 @@ function SpotJs () {
     uta: 'user_token',
     apiEndpoint: '/edp/api/event',
     apiContentType: 'application/json',
-    userParam: 'spot_user',
     dataLayerId: 'spot_data',
     cookiePrefix: 'spot_',
+    sessionLength: 60*60*1, // 1h
     cookieMaxAge: 60*60*24*365, // 1y
-    useNavigatorBeacon: false, // not supported in IE
     logLevel: 2, // 0:none, 1:error, 2:info, 3:trace
+    params: {
+      'spot_user': 'spot_user',
+      'spot_ut': 'spot_ut',
+      'spot_uta': 'spot_uta' },
     eventParamKeys: {
       "subtype": "event_subtype",
       "source": "event_source",
@@ -29,11 +32,12 @@ function SpotJs () {
       "click_link_name": "click_link_name",
       "click_link_tags": "click_link_tags",
       "user_agent": "user_agent_raw" },
+    useNavigatorBeacon: false, // not supported in IE
     autoEvents: [ { type:"web", params: { subtype: "visit", url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} } ]
   };
 
   // @public user object
-  let user = { dt: null, ut: null, uta: config.uta, optin: null, dnt: null, update_attributes: {} };
+  let user = { dt: null, ut: null, st: null, uta: config.uta, optin: null, dnt: null, update_attributes: {} };
 
   // @public return object
   let spotjs = {
@@ -238,6 +242,7 @@ function SpotJs () {
       "campaign": data.campaign || config.defaultCampaign
     };
     evt.client.identifier[config.dta] = user.dt; // TODO - finalize location in api signature
+    evt.client.identifier[config.sta] = user.st; // TODO - finalize location in api signature
     if (!evt.event.iso_time) {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
@@ -303,18 +308,24 @@ function SpotJs () {
   // Load the user from querystring or inline variable
   let detectUser = function () {
     let user2 = null;
-    if (typeof window[config.userParam] !== "undefined") {
-      user2 = window[config.userParam];
+    if (typeof window[config.params.spot_user] !== "undefined") {
+      user2 = window[config.params.spot_user];
       logTrace("spotjs.detectUser window.user2 = ", user2);
     }
     if (!user2) {
-      let param = getParam(config.userParam);
+      let param = getParam(config.params.spot_user);
       if (param) {
         if (param.indexOf("{") !== 0) {
           param = atob(param);
         }
         user2 = JSON.parse(param);
-        logTrace("spotjs.detectUser ?"+config.userParam+" = ", user2);
+        logTrace("spotjs.detectUser ?"+config.params.spot_user+" = ", user2);
+      }
+    }
+    if (!user) {
+      let param = getParam(config.params.spot_ut);
+      if (param) {
+        user2 = { ut: param, uta: getParam(config.params.spot_uta) };
       }
     }
     if (user2) {
@@ -332,11 +343,12 @@ function SpotJs () {
     data = data || {};
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
-    getUserCookie("dnt", null, data);
     getUserCookie("uta", config.uta, data);
+    getUserCookie("st", "{uuidv4}", data, { cookieMaxAge: config.sessionLength });
+    getUserCookie("dnt", null, data);
   }
 
-  let getUserCookie = function (key, defaultVal, data) {
+  let getUserCookie = function (key, defaultVal, data, options) {
     let cookieVal = getCookie(key);
     if (user[key] === undefined || user[key] === null) {
       if (data[key] !== undefined) {
@@ -357,7 +369,7 @@ function SpotJs () {
     let cookieVal2 = user[key];
     // Save the value as a cookie, but only if necessary
     if (cookieVal2 !== undefined && cookieVal2 !== cookieVal) { // && (cookieVal2 !== defaultVal && !cookieVal)) {
-      setCookie(key, cookieVal2);
+      setCookie(key, cookieVal2, options);
     }
   }
 
@@ -370,14 +382,15 @@ function SpotJs () {
     return v2;
   }
 
-  let setCookie = function (name, value) {
+  let setCookie = function (name, value, options) {
+    options = options || config;
     if (isPersonal(name, value)) {
       value = "redacted";
     }
     let c = config.cookiePrefix+name+'='+value;
     c += '; SameSite=None';
     c += '; Secure=true';
-    c += '; Max-Age='+config.cookieMaxAge;
+    c += '; Max-Age='+options.cookieMaxAge;
     c += "; Path=/";
     document.cookie = c;
     logTrace("spotjs.setCookie c=", c);
