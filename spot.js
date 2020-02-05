@@ -269,7 +269,7 @@ function SpotJs () {
         else {
           // send unknown event params in params_json
           params_json[key] = val;
-          evt.event.params_json = params_json;
+          evt.params_json = params_json;
         }
       }
     }
