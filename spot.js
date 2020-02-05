@@ -3,7 +3,7 @@
  */
 
 function SpotJs () {
-  let version = "0.1.2";
+  let version = "0.1.3";
 
   //@public tag config
   let config = {
@@ -259,6 +259,10 @@ function SpotJs () {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
     }
+    // Campaign parameters
+    for (const key of Object.keys(campaignParams)) {
+      data.params[key] = data.params[key] || getParam(key);
+    }
     // Copy known params to top-level Object, and submit others as params_json
     let params_json = {};
     for (const key of Object.keys(data.params)) {
@@ -270,13 +274,6 @@ function SpotJs () {
         // send unknown event params in params_json
         params_json[key] = val;
         evt.params_json = params_json;
-      }
-    }
-    // Campaign parameters
-    for (const key of Object.keys(campaignParams)) {
-      let v = data.params[key] || getParam(key);
-      if (v) {
-        evt[campaignParams[key]] = v;
       }
     }
     // Update attributes
