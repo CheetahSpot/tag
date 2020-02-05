@@ -246,7 +246,7 @@ function SpotJs () {
     // Construct Event
     var evt = {
       "event": { "type": data.type, "iso_time": data.iso_time },
-      "client": { "identifier": { "id": user.ut, "id_field": user.uta }, "user_agent_raw : "+user_agent: navigator.userAgent },
+      "client": { "identifier": { "id": user.ut, "id_field": user.uta }, user_agent: "user_agent_raw : "+navigator.userAgent },
       "campaign": data.campaign || config.defaultCampaign
     };
     try { evt.client.event.local_tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ }
