@@ -9,7 +9,7 @@ function SpotJs () {
   let config = {
     apiAuth: null,
     apiHost: null,
-    defaultCampaign: { "ext_parent_id": "1", "camp_id": "1" }, // TODO - verify we want to save these
+    defaultCampaign: { "ext_parent_id": "0", "camp_id": "0" },
     dta: 'device_token',
     uta: 'user_token',
     sta: 'session_token',
@@ -20,19 +20,19 @@ function SpotJs () {
     sessionLength: 60*60*1, // 1h
     cookieMaxAge: 60*60*24*365, // 1y
     logLevel: 2, // 0:none, 1:error, 2:info, 3:trace
-    spotSearchParams: {
+    spotParams: {
       'spot_user': 'spot_user',
       'spot_ut': 'spot_ut',
       'spot_uta': 'spot_uta' },
-    campaignSearchParams: {
+    campaignParams: {
+      "tp": "tp",
       "utm_source": "utm_source",
       "utm_medium": "utm_medium",
       "utm_campaign": "utm_campaign",
       "utm_content": "utm_content"
     },
     eventParamKeys: {
-      "subtype": "event_subtype",
-      "source": "event_source" },
+      "subtype": "event_subtype" },
     useNavigatorBeacon: false, // not supported in IE
     autoEvents: [ { type:"web", params: { subtype: "visit" } } ]
   };
@@ -250,6 +250,7 @@ function SpotJs () {
       "campaign": data.campaign || config.defaultCampaign
     };
     try { evt.client.event.local_tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ }
+    evt.source = spotjs.name;
     evt.client.identifier[config.dta] = user.dt; // TODO - finalize location in api signature
     evt.client.identifier[config.sta] = user.st; // TODO - finalize location in api signature
     evt.event.web_event_url_referrer = data.params.referrer || document.referrer;
@@ -269,6 +270,13 @@ function SpotJs () {
         // send unknown event params in params_json
         params_json[key] = val;
         evt.params_json = params_json;
+      }
+    }
+    // Campaign parameters
+    for (const key of Object.keys(campaignParams)) {
+      let v = data.params[key] || getParam(key);
+      if (v) {
+        evt[campaignParams[key]] = v;
       }
     }
     // Update attributes
@@ -317,24 +325,24 @@ function SpotJs () {
   // Load the user from querystring or inline variable
   let detectUser = function () {
     let user2 = null;
-    if (typeof window[config.spotSearchParams.spot_user] !== "undefined") {
-      user2 = window[config.spotSearchParams.spot_user];
+    if (typeof window[config.spotParams.spot_user] !== "undefined") {
+      user2 = window[config.spotParams.spot_user];
       logTrace("spotjs spot_user variable = ", user2);
     }
     if (!user2) {
-      let param = getParam(config.spotSearchParams.spot_user);
+      let param = getParam(config.spotParams.spot_user);
       if (param) {
         if (param.indexOf("{") !== 0) {
           param = atob(param);
         }
         user2 = JSON.parse(param);
-        logTrace("spotjs ?spot_user="+config.spotSearchParams.spot_user+" = ", user2);
+        logTrace("spotjs ?spot_user="+config.spotParams.spot_user+" = ", user2);
       }
     }
     if (!user2) {
-      let param = getParam(config.spotSearchParams.spot_ut);
+      let param = getParam(config.spotParams.spot_ut);
       if (param) {
-        user2 = { ut: param, uta: getParam(config.spotSearchParams.spot_uta) };
+        user2 = { ut: param, uta: getParam(config.spotParams.spot_uta) };
         logTrace("spotjs ?spot_ut = ", user2);
       }
     }
