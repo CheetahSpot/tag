@@ -31,6 +31,7 @@ function SpotJs () {
       "utm_campaign": "utm_campaign",
       "utm_content": "utm_content"
     },
+    eventSource: "cdwebtag",
     eventParamKeys: {
       "subtype": "event_subtype" },
     useNavigatorBeacon: false, // not supported in IE
@@ -70,18 +71,29 @@ function SpotJs () {
 
   // @public identify
   let identify = spotjs.identify = function (user2) {
-    if (typeof user2 !== "object") {
-      logError("spotjs.identify error - user object is required", user2);
-      return false;
-    }
-    logTrace("spotjs.identify user2 =", JSON.stringify(user2));
-    Object.assign(spotjs.user, user2);
+    setUser(user2);
   }
 
   // @public signin - identify plus optin
   let signIn = spotjs.signin = function (user2) {
-    identify(user2);
+    setUser(user2);
     setOptin(1);
+  }
+
+  // @private setuser - setter with validation
+  let setUser = function (user2) {
+    if (typeof user2 !== "object") {
+      logError("spotjs.setUser error - user object is required", user2);
+      return false;
+    }
+    if (isPersonal(user2.ut)) {
+      user2.ut = "redacted";
+      logError("spotjs.setUser error - personal info (e.g. email) not allowed", user2);
+      return false;
+    }
+    logTrace("spotjs.setUser user2 =", JSON.stringify(user2));
+    Object.assign(spotjs.user, user2);
+    return true;
   }
   
   // @public Signout
@@ -245,12 +257,12 @@ function SpotJs () {
     logTrace("spotjs.processEvent data =", data);
     // Construct Event
     var evt = {
+      "source": spotjs.eventSource,
       "event": { "type": data.type, "iso_time": data.iso_time },
       "client": { "identifier": { "id": user.ut, "id_field": user.uta }, user_agent: "user_agent_raw : "+navigator.userAgent },
       "campaign": data.campaign || config.defaultCampaign
     };
     try { evt.client.event.local_tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ }
-    evt.source = spotjs.name;
     evt.client.identifier[config.dta] = user.dt; // TODO - finalize location in api signature
     evt.client.identifier[config.sta] = user.st; // TODO - finalize location in api signature
     evt.event.web_event_url_referrer = data.params.referrer || document.referrer;
@@ -260,7 +272,7 @@ function SpotJs () {
       evt.event.iso_time = dateobj.toISOString();
     }
     // Campaign parameters
-    for (const key of Object.keys(campaignParams)) {
+    for (const key of Object.keys(config.campaignParams)) {
       data.params[key] = data.params[key] || getParam(key);
     }
     // Copy known params to top-level Object, and submit others as params_json
@@ -348,8 +360,8 @@ function SpotJs () {
         // Assume user_token is the default attribute
         user2.uta = config.uta;
       }
-      Object.assign(user, user2);
       logInfo("spotjs.detectUser identity user2 = ", user2);
+      setUser(user2);
       spotjs.pendingEvents.push({ "type": "identify", "params": user2 });
     }
   }
