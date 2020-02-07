@@ -86,7 +86,7 @@ function SpotJs () {
       logError("spotjs.setUser error - user object is required", user2);
       return false;
     }
-    if (isPersonal(user2.ut, user2.uta)) {
+    if (isPersonal(user2.ut, user2.ut)) {
       user2.ut = "redacted";
       logError("spotjs.setUser error - email is not allowed as an identifier", user2);
       return false;
@@ -292,7 +292,7 @@ function SpotJs () {
     let update_attributes = data.update_attributes || {};
     Object.apply(update_attributes, user.update_attributes);
     // Anonymous
-    if (!evt.client.identifier.id) {
+    if (!evt.client.identifier.id || isPersonal(evt.client.identifier.id_field, evt.client.identifier.id)) {
       evt.client.identifier.id = user.dt;
       evt.client.identifier.id_field = config.dta;
       update_attributes.visitor = true;
