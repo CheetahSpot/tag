@@ -86,9 +86,9 @@ function SpotJs () {
       logError("spotjs.setUser error - user object is required", user2);
       return false;
     }
-    if (isPersonal(user2.ut)) {
+    if (isPersonal(user2.ut, user2.uta)) {
       user2.ut = "redacted";
-      logError("spotjs.setUser error - personal info (e.g. email) not allowed", user2);
+      logError("spotjs.setUser error - email is not allowed as an identifier", user2);
       return false;
     }
     logTrace("spotjs.setUser user2 =", JSON.stringify(user2));
@@ -426,7 +426,7 @@ function SpotJs () {
   // Detect if a value looks like personal info
   let isPersonal = function (name, val) {
     // look for possible email address
-    return /^.+@.+\..+$/.test(val);
+    return name === 'email' || /^.+@.+\..+$/.test(val);
   }
  
   // get a querystring parameter by name
