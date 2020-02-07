@@ -34,7 +34,7 @@
       function beforeCartCheckout (data) { return confirm("confirm checkout") }
       function afterCartCheckout (data) { alert("thanks for your purchase!") }
       function cancelCartCheckout (data) { alert("items will remain in your cart for 24 hours") }
-      function afterSignin (data) { alert("welcome "+data.params.first_name+"!"); }
+      function afterSignin (data) { alert("welcome!"); }
 
       // Trigger on button click
       document.addEventListener('click', function (event) {
