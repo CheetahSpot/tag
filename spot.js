@@ -19,8 +19,8 @@ function SpotJs () {
     apiContentType: 'application/json',
     dataLayerId: 'spot_data',
     cookiePrefix: 'spot_',
-    sessionLength: 60*30, // 30 min
-    cookieMaxAge: 60*60*24*365, // 1y
+    sessionLength: 60*30, // default 30 min
+    cookieMaxAge: 60*60*24*90, // default 90 days
     logLevel: 2, // 0:none, 1:error, 2:info, 3:trace
     tagParams: {
       'spot_user': 'spot_user',

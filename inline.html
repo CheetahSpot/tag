@@ -97,10 +97,11 @@
         <h1>Visitors</h1>
         <p class="lead">Spot automatically creates a unique device_token for the browser on first visit.
         This is stored in the "spot_dt" cookie and will identify the device even if the user is subsequently identified.
-        A device token is a unique 128-bit number generated UUID (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0".</p>
-        <p class="lead">Spot also generates a random UUID device_token for the browser session. The cookie max age is set to the Spot config.sessionLength setting, which default to one hour. All Events submitted include the session token.</p>
+        A device token is a unique 128-bit number generated UUID (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0". The cookie max age is set to the Spot cookieMaxAge config setting, which defaults to 30 minutes.</p>
+        <p class="lead">Spot also generates a random UUID session_token for the browser session. The cookie max age is set to the Spot sessionLength config setting, which defaults to 30 minutes. </p>
         <p class="lead">You can use Spot to submit an Event such as "visit web page", by pushing the event to the data layer:</p>
         <code>spot_data.push({ "event":"visit_web_page", params: { url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code>
+        <p class="lead">All Events submitted include the device_token and session_token.</p>
         <p class="lead">An anonymous event for a device_token will result in a new member record.</p>
       </div>
 
