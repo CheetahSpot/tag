@@ -107,12 +107,12 @@
 
       <div class="jumbotron">
         <h1>User Identification</h1>
-        <p class="lead">If a user signs in or is otherwise identified, the identifier is stored in the "spot_ut" cookie, and "identify" event is submitted matching the user identifier to the device_token. The user identifier will be used for events instead of device_token. All EDP identity fields are supported.</p>
+        <p class="lead">If a user signs in or is otherwise identified, the identifier is stored in the "spot_ut" cookie, and "identify" event is submitted matching the user identifier to the device_token. The user identifier will be used for events instead of device_token. All EDP identity fields are supported, except for "email".</p>
         <p>
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
         </p>
-        <p class="lead">Email is supported as identifier but is not preferred out of respect for user privacy.
+        <p class="lead">Email is not supported as an identifier out of respect for user privacy.
         If an identifier appears to be an email address the cookie will be saved as the string "redacted", 
         so on subsequent page loads the user will no longer be identified.
         </p>
