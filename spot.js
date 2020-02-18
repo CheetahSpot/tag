@@ -1,15 +1,17 @@
 /**
- * Spot Web Tag
+ * Spot CD Tag
  */
 
 function SpotJs () {
-  let version = "0.1.3";
+  let version = "0.1.4";
 
   //@public tag config
   let config = {
     apiAuth: null,
     apiHost: null,
-    defaultCampaign: { "ext_parent_id": "0", "camp_id": "0" },
+    defaultCampaign: { "camp_id": "0", "ext_parent_id": "0" },
+    eventType: 'tag',
+    eventSource: "cd-tag",
     dta: 'device_token',
     uta: 'user_token',
     sta: 'session_token',
@@ -17,25 +19,17 @@ function SpotJs () {
     apiContentType: 'application/json',
     dataLayerId: 'spot_data',
     cookiePrefix: 'spot_',
-    sessionLength: 60*60*1, // 1h
+    sessionLength: 60*30, // 30 min
     cookieMaxAge: 60*60*24*365, // 1y
     logLevel: 2, // 0:none, 1:error, 2:info, 3:trace
-    spotParams: {
+    tagParams: {
       'spot_user': 'spot_user',
       'spot_ut': 'spot_ut',
-      'spot_uta': 'spot_uta' },
-    campaignParams: {
-      "tp": "tp",
-      "utm_source": "utm_source",
-      "utm_medium": "utm_medium",
-      "utm_campaign": "utm_campaign",
-      "utm_content": "utm_content"
+      'spot_uta': 'spot_uta',
+      'spot_camp_id': 'spot_camp_id' }
     },
-    eventSource: "cdwebtag",
-    eventParamKeys: {
-      "subtype": "event_subtype" },
-    useNavigatorBeacon: false, // not supported in IE
-    autoEvents: [ { type:"web", params: { subtype: "visit" } } ]
+    eventParamKeys: { },
+    useNavigatorBeacon: false // not supported in IE
   };
 
   // Spot Config can be overridden with a javascript variable on the page.
@@ -63,9 +57,9 @@ function SpotJs () {
       logInfo  = config.logLevel >=2 ? log : emptyFn,
       logTrace = config.logLevel >=3 ? log : emptyFn;
 
-  // @public track
+  // @public push
   // Helper function to push an event to the data layer
-  let track = spotjs.track = function (eventType, params) {
+  let push = spotjs.push = function (eventType, params) {
     spotjs.dataLayer.push({ "type": eventType, "params": params });
   }
 
@@ -116,11 +110,6 @@ function SpotJs () {
   let initDataLayer = function () {
     if (!spotjs.dataLayer) {
       spotjs.dataLayer = window[config.dataLayerId] = window[config.dataLayerId] || [];
-      if (config.autoEvents !== undefined && config.autoEvents.length) {
-        while (config.autoEvents.length) {
-          spotjs.dataLayer.push(config.autoEvents.shift());
-        }
-      }
       while (spotjs.pendingEvents.length) {
         spotjs.dataLayer.push(spotjs.pendingEvents.shift());
       }
@@ -200,7 +189,7 @@ function SpotJs () {
   let preprocessEvent = function (data) {
     let send = true;
     if (user.dnt === 1) {
-      // do not track - do not send events
+      // do not send events
       send = false;
     }
     if (!data.type) {
@@ -242,13 +231,15 @@ function SpotJs () {
 
   // Process a business event, such as a page visit, add to cart, etc.
   let processEvent = function (data) {
+    data = data || {};
     if (!data.type) {
       return;
     }
     let send = preprocessEvent(data);
-    processUser(data);
+    processCampaign(data);
+    processCookies(data);
     if (!send) {
-      logInfo("spotjs.processEvent - do not track");
+      logInfo("spotjs.processEvent - dnt");
       return;
     }
     if (typeof data.params !== "object") {
@@ -257,23 +248,19 @@ function SpotJs () {
     logTrace("spotjs.processEvent data =", data);
     // Construct Event
     var evt = {
-      "source": spotjs.eventSource,
-      "event": { "type": data.type, "iso_time": data.iso_time },
+      "event": { "type": spot.eventType, "sub_type": data.type, "iso_time": data.iso_time },
+      "campaign": data.campaign,
       "client": { "identifier": { "id": user.ut, "id_field": user.uta }, user_agent: "user_agent_raw : "+navigator.userAgent },
-      "campaign": data.campaign || config.defaultCampaign
+      "source": spotjs.eventSource
     };
     try { evt.client.event.local_tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ }
     evt.client.identifier[config.dta] = user.dt; // TODO - finalize location in api signature
     evt.client.identifier[config.sta] = user.st; // TODO - finalize location in api signature
-    evt.event.web_event_url_referrer = data.params.referrer || document.referrer;
-    evt.link = { "url": data.params.url || document.location.href };
+    //evt.event.web_event_url_referrer = data.params.referrer || document.referrer;
+    //evt.link = { "url": data.params.url || document.location.href };
     if (!evt.event.iso_time) {
       let dateobj = new Date();
       evt.event.iso_time = dateobj.toISOString();
-    }
-    // Campaign parameters
-    for (const key of Object.keys(config.campaignParams)) {
-      data.params[key] = data.params[key] || getParam(key);
     }
     // Copy known params to top-level Object, and submit others as params_json
     let params_json = {};
@@ -301,7 +288,7 @@ function SpotJs () {
       evt.callback = { "update_attributes": update_attributes };
     }
 
-    logTrace("spotjs.processEvent", evt.event.type, "/", evt.event.subtype, " evt=", evt);
+    logTrace("spotjs.processEvent", evt.event.type, "/", evt.event.sub_type, " evt=", evt);
     sendEvent(evt);
   }
 
@@ -334,24 +321,24 @@ function SpotJs () {
   // Load the user from querystring or inline variable
   let detectUser = function () {
     let user2 = null;
-    if (typeof window[config.spotParams.spot_user] !== "undefined") {
-      user2 = window[config.spotParams.spot_user];
+    if (typeof window[config.tagParams.spot_user] !== "undefined") {
+      user2 = window[config.tagParams.spot_user];
       logTrace("spotjs spot_user variable = ", user2);
     }
     if (!user2) {
-      let param = getParam(config.spotParams.spot_user);
+      let param = getParam(config.tagParams.spot_user);
       if (param) {
         if (param.indexOf("{") !== 0) {
           param = atob(param);
         }
         user2 = JSON.parse(param);
-        logTrace("spotjs ?spot_user="+config.spotParams.spot_user+" = ", user2);
+        logTrace("spotjs ?spot_user="+config.tagParams.spot_user+" = ", user2);
       }
     }
     if (!user2) {
-      let param = getParam(config.spotParams.spot_ut);
+      let param = getParam(config.tagParams.spot_ut);
       if (param) {
-        user2 = { ut: param, uta: getParam(config.spotParams.spot_uta) };
+        user2 = { ut: param, uta: getParam(config.tagParams.spot_uta) };
         logTrace("spotjs ?spot_ut = ", user2);
       }
     }
@@ -366,12 +353,23 @@ function SpotJs () {
     }
   }
 
-  let processUser = function (data) {
-    data = data || {};
+  let processCampaign = function (data) {
+    data.campaign = data.campaign || config.defaultCampaign;
+    if (data.campaign.camp_id === config.defaultCampaign.camp_id) {
+      let param = getParam(config.tagParams.spot_camp_id);
+      if (param) {
+        data.campaign.camp_id = param;
+      }
+    }
+    //user.campaign = JSON.stringify(data.campaign);
+  }
+
+  let processCookies = function (data) {
     getUserCookie("dt", "{uuidv4}", data);
     getUserCookie("ut", "", data);
     getUserCookie("uta", config.uta, data);
     getUserCookie("st", "{uuidv4}", data, { cookieMaxAge: config.sessionLength });
+    //getUserCookie("campaign", "", data, { cookieMaxAge: config.sessionLength });
     getUserCookie("dnt", null, data);
   }
 
