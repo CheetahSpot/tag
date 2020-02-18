@@ -220,10 +220,10 @@ function SpotJs () {
 
   let formatEventParam = function (eventType, key, val) {
     switch (val) {
-      case "{url}": return document.location.href;
-      case "{referrer}": return document.location.href;
-      case "{useragent}": return navigator.userAgent;
-      default: return val;
+      case "{url}":        return document.location.href;
+      case "{referrer}":   return document.location.href;
+      case "{useragent}":  return navigator.userAgent;
+      default:             return val;
     }
   }
 
