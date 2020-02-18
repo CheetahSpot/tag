@@ -59,7 +59,7 @@ function SpotJs () {
   // @public push
   // Helper function to push an event to the data layer
   let push = spotjs.push = function (eventType, params) {
-    spotjs.dataLayer.push({ "type": eventType, "params": params });
+    spotjs.dataLayer.push({ "event": eventType, "params": params });
   }
 
   // @public identify
@@ -150,7 +150,7 @@ function SpotJs () {
             }
           }
         }
-        if (data.type) {
+        if (data.event) {
           processEvent(data);
         }
         if (data.after && typeof window[data.after] === "function") {
@@ -184,17 +184,17 @@ function SpotJs () {
     return false; // no errors = valid
   }
 
-  // Handle any special event type
+  // Handle any special event
   let preprocessEvent = function (data) {
     let send = true;
     if (user.dnt === 1) {
       // do not send events
       send = false;
     }
-    if (!data.type) {
+    if (!data.event) {
       return;
     }
-    switch (data.type) {
+    switch (data.event) {
       case "identify":
         identify(data.params);
         break;
@@ -230,7 +230,7 @@ function SpotJs () {
   // Process a business event, such as a page visit, add to cart, etc.
   let processEvent = function (data) {
     data = data || {};
-    if (!data.type) {
+    if (!data.event) {
       return;
     }
     let send = preprocessEvent(data);
@@ -246,7 +246,7 @@ function SpotJs () {
     logTrace("spotjs.processEvent data =", data);
     // Construct Event
     var evt = {
-      "event": { "type": config.eventType, "sub_type": data.type, "iso_time": data.iso_time },
+      "event": { "type": config.eventType, "sub_type": data.event, "iso_time": data.iso_time },
       "campaign": data.campaign,
       "client": { "identifier": { "id": user.ut, "id_field": user.uta }, user_agent: "user_agent_raw : "+navigator.userAgent },
       "source": spotjs.eventSource
@@ -286,7 +286,7 @@ function SpotJs () {
       evt.callback = { "update_attributes": update_attributes };
     }
 
-    logTrace("spotjs.processEvent", evt.event.type, "/", evt.event.sub_type, " evt=", evt);
+    logTrace("spotjs.processEvent", evt.event.event, "/", evt.event.sub_type, " evt=", evt);
     sendEvent(evt);
   }
 
@@ -298,7 +298,7 @@ function SpotJs () {
     }
     else {
       let xhr = new XMLHttpRequest();
-      let evtId = evt.event.type+"-event-"+spotjs.sentEvents.length;
+      let evtId = evt.event.event+"-event-"+spotjs.sentEvents.length;
       let sentEvent = { "id": evtId, "evt": evt, "xhr": xhr };
       spotjs.sentEvents.push(sentEvent);
       xhr.withCredentials = true;
@@ -347,7 +347,7 @@ function SpotJs () {
       }
       logInfo("spotjs.detectUser identity user2 = ", user2);
       setUser(user2);
-      spotjs.pendingEvents.push({ "type": "identify", "params": user2 });
+      spotjs.pendingEvents.push({ "event": "identify", "params": user2 });
     }
   }
 

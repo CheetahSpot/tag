@@ -98,7 +98,7 @@
         <p class="lead">Spot automatically creates a unique device_token for the browser on first visit.
         This is stored in the "spot_dt" cookie and will identify the device even if the user is subsequently identified.
         A device token is a unique 128-bit number generated UUID (generated as uuidv4) such as "4d8f9e7a-3ccb-4b2b-8297-6372fd3bdfe0". The cookie max age is set to the Spot cookieMaxAge config setting, which defaults to 30 minutes.</p>
-        <p class="lead">Spot also generates a random UUID session_token for the browser session. The cookie max age is set to the Spot sessionLength config setting, which defaults to 30 minutes. </p>
+        <p class="lead">Spot also generates a random UUID session_token for the browsing session. The cookie max age is set to the Spot sessionLength config setting, which defaults to 30 minutes. </p>
         <p class="lead">You can use Spot to submit an Event such as "visit web page", by pushing the event to the data layer:</p>
         <code>spot_data.push({ "event":"visit_web_page", params: { url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code>
         <p class="lead">All Events submitted include the device_token and session_token.</p>
@@ -190,9 +190,9 @@
           Spot preserves user's optin or optout choice by setting a Do Not Track cookie "spot_dnt=1". Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".
           If Do Not Track is enabled ("spot_dnt=1") Events are blocked and not sent to the server. </p>
         </p>
-        <h4>Personal Information</h4>
+        <h4>Obviously Personal Information</h4>
         <p class="lead">
-        Spot attempts to detect personal information such as email addresses and will avoid saving those into cookies.
+        Spot attempts to detect obviously personal information such as email addresses and will avoid saving those into cookies.
         So if a customer were to send an email address as the user_token in a querystring parameter (which is not recommended but technically possibl),
         Spot would use the value for submitting events but never store it as a cookie.</p>
       </div>
