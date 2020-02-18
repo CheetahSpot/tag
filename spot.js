@@ -26,8 +26,7 @@ function SpotJs () {
       'spot_user': 'spot_user',
       'spot_ut': 'spot_ut',
       'spot_uta': 'spot_uta',
-      'spot_camp_id': 'spot_camp_id' }
-    },
+      'spot_camp_id': 'spot_camp_id' },
     eventParamKeys: { },
     useNavigatorBeacon: false // not supported in IE
   };
@@ -221,11 +220,10 @@ function SpotJs () {
 
   let formatEventParam = function (eventType, key, val) {
     switch (val) {
-      case "{url}":
-        return document.location.href;
-        break;
-      default:
-        return val;
+      case "{url}": return document.location.href;
+      case "{referrer}": return document.location.href;
+      case "{useragent}": return navigator.userAgent;
+      default: return val;
     }
   }
 
