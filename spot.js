@@ -246,7 +246,7 @@ function SpotJs () {
     logTrace("spotjs.processEvent data =", data);
     // Construct Event
     var evt = {
-      "event": { "type": spot.eventType, "sub_type": data.type, "iso_time": data.iso_time },
+      "event": { "type": config.eventType, "sub_type": data.type, "iso_time": data.iso_time },
       "campaign": data.campaign,
       "client": { "identifier": { "id": user.ut, "id_field": user.uta }, user_agent: "user_agent_raw : "+navigator.userAgent },
       "source": spotjs.eventSource
