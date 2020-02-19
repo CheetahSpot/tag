@@ -9,14 +9,15 @@ function SpotJs () {
   let config = {
     apiAuth: null,
     apiHost: null,
+    apiEndpoint: '/edp/api/event',
+    apiContentType: 'application/json',
     defaultCampaign: { "camp_id": "0", "ext_parent_id": "0" },
     eventType: 'tag',
-    eventSource: "cd-tag",
+    eventSubtype: 'tag',
+    eventSource: "cdtag",
     dta: 'device_token',
     uta: 'user_token',
     sta: 'session_token',
-    apiEndpoint: '/edp/api/event',
-    apiContentType: 'application/json',
     dataLayerId: 'spot_data',
     cookiePrefix: 'spot_',
     sessionLength: 60*30, // default 30 min
@@ -59,7 +60,7 @@ function SpotJs () {
   // @public push
   // Helper function to push an event to the data layer
   let push = spotjs.push = function (eventType, params) {
-    spotjs.dataLayer.push({ "event": eventType, "params": params });
+    spotjs.dataLayer.push({ "event": eventType || config.eventType, "params": params });
   }
 
   // @public identify
@@ -246,7 +247,7 @@ function SpotJs () {
     logTrace("spotjs.processEvent data =", data);
     // Construct Event
     var evt = {
-      "event": { "type": config.eventType, "sub_type": data.event, "iso_time": data.iso_time },
+      "event": { "type": data.event, "sub_type": config.eventSubtype || data.sub_type, "iso_time": data.iso_time },
       "campaign": data.campaign,
       "client": { "identifier": { "id": user.ut, "id_field": user.uta }, user_agent: "user_agent_raw : "+navigator.userAgent },
       "source": spotjs.eventSource
@@ -286,14 +287,14 @@ function SpotJs () {
       evt.callback = { "update_attributes": update_attributes };
     }
 
-    logTrace("spotjs.processEvent", evt.event.event, "/", evt.event.sub_type, " evt=", evt);
+    logTrace("spotjs.processEvent", evt.event.type, " evt=", evt);
     sendEvent(evt);
   }
 
   let sendEvent = function (evt) {
     logTrace("spotjs.sendEvent evt =", evt);
     if (config.useNavigatorBeacon && navigator.sendBeacon) {
-      let blob = new Blob(JSON.stringify(evt), { "type": "application/json" });
+      let blob = new Blob(JSON.stringify(evt), { "type": config.apiContentType });
       navigator.sendBeacon(config.apiHost + config.apiEndpoint, blob);
     }
     else {
