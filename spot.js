@@ -274,7 +274,7 @@ function SpotJs () {
         // set known params on event object
         evt.event[config.eventParamKeys[key]] = val;
       }
-      else if (key !== "ut" || key !== "uta"){
+      else if (key !== "ut" && key !== "uta"){
         // send unknown event params in params_json
         params_json[key] = val;
         evt.params_json = params_json;
