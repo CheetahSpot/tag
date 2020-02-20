@@ -299,7 +299,7 @@ function SpotJs () {
   // @private sendEvent - xhr transport
   let sendEvent = function (evt) {
     let xhr = new XMLHttpRequest();
-    let evtId = evt.event.event+"-event-"+spotjs.sentEvents.length;
+    let evtId = evt.event.type+"-event-"+spotjs.sentEvents.length;
     logTrace("spotjs.sendEvent evtId =", evtId, " evt =", evt);
     spotjs.sentEvents.push({ "id": evtId, "evt": evt, "xhr": xhr });
     xhr.withCredentials = true;
