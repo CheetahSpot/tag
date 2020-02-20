@@ -243,16 +243,13 @@ function SpotJs () {
     }
     processCookies(data);
     logTrace("spotjs.processEvent data =", data);
-    if (!data.iso_time) {
-      let dateobj = new Date();
-      data.iso_time = dateobj.toISOString();
-    }
     // Construct event payload
-    var evt = {};
+    var evt = {},
+        dateobj = new Date();
     evt.event = {
       "type": data.event,
       "sub_type": config.eventSubtype,
-      "iso_time": data.iso_time };
+      "iso_time": dateobj.toISOString() };
     try { evt.event.local_tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ }
     processCampaign(data);
     evt.campaign = data.campaign;
