@@ -21,6 +21,7 @@
       var customEvents = {
         "browse_product":   { "event": "browse_product", "params": { 'item': 'sammich' } },
         "add_to_cart":      { "event": "add_to_cart", "params": { 'item': 'sammich' } },
+        "view_cart":        { "event": "view_cart", "params": { 'item': 'sammich' } },
         "remove_from_cart": { "event": "remove_from_cart", "params": { 'item': 'sammich' }, "after": "afterRemoveFromCart" },
         "cart_checkout":    { "event": "checkout_cart", "params": { 'item': 'sammich' }, "before": "beforeCartCheckout", "after": "afterCartCheckout", "cancel": "cancelCartCheckout" },
         "identify":         { "event": "identify", "params": { 'ut': 'Paul000002_usrtok', 'uta': 'user_token' } },
@@ -159,8 +160,11 @@
           Some of the buttons define Spot callback functions for "before", "after", and "cancel".
         </p>
         <p>
-          <a class="btn btn-lg btn-primary" href="#" id="browse_product" role="button">Browse Product</a>
-          <a class="btn btn-lg btn-info" href="#" id="add_to_cart" role="button">Add to Cart</a>
+          <a class="btn btn-lg btn-info" href="#" id="browse_product" role="button">Browse Product</a>
+          <a class="btn btn-lg btn-primary" href="#" id="add_to_cart" role="button">Add to Cart</a>
+        </p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="#" id="view_cart" role="button">View Cart</a>
           <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
           <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
