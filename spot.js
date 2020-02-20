@@ -4,7 +4,7 @@
  */
 
 function SpotJs () {
-  let version = "0.1.5";
+  let version = "0.1.6";
 
   //@orivate tag config
   let config = {
