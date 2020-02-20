@@ -25,8 +25,8 @@
         "cart_checkout":    { "event": "checkout_cart", "params": { 'item': 'sammich' }, "before": "beforeCartCheckout", "after": "afterCartCheckout", "cancel": "cancelCartCheckout" },
         "identify":         { "event": "identify", "params": { 'ut': 'Paul000002_usrtok', 'uta': 'user_token' } },
         "email_identify":   { "event": "identify", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterSignin" },
-        "update_name":      { "event": "update", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterSignin", "update_attributes": { "first_name": "Paul" } },
-        "update_address":   { "event": "update", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterSignin", "update_attributes": { "mailing_city": "San Mateo", "mailing_state": "CA" } },
+        "update_name":      { "event": "update", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterUpdateName", "update_attributes": { "first_name": "Paul" } },
+        "update_address":   { "event": "update", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "update_attributes": { "mailing_city": "San Mateo", "mailing_state": "CA" } },
         "signin":           { "event": "signin", "params": { 'ut': 'Paul000001_intid', 'uta': 'integration_id', "first_name": "Paul" } },
         "signout":          { "event": "signout" },
         "optin":            { "event": "optin" },
@@ -37,7 +37,8 @@
       function beforeCartCheckout (data) { return confirm("confirm checkout") }
       function afterCartCheckout (data) { alert("thanks for your purchase!") }
       function cancelCartCheckout (data) { alert("items will remain in your cart for 24 hours") }
-      function afterSignin (data) { alert("welcome!"); }
+      function afterSignin (data) { alert("Welcome!") }
+      function afterUpdateName (data) { alert("Welcome"+data.update_attributes.first_name+"!") }
 
       // Trigger on button click
       document.addEventListener('click', function (event) {
