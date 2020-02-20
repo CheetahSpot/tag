@@ -24,6 +24,8 @@
         "cart_checkout":    { "event": "checkout_cart", "params": { 'item': 'sammich' }, "before": "beforeCartCheckout", "after": "afterCartCheckout", "cancel": "cancelCartCheckout" },
         "identify":         { "event": "identify", "params": { 'ut': 'Paul000002_usrtok', 'uta': 'user_token' } },
         "email_identify":   { "event": "identify", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterSignin" },
+        "update_name":      { "event": "update", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterSignin", "update_attributes": { "first_name": "Paul" } },
+        "update_address":   { "event": "update", "params": { 'ut': 'paul@example.com', 'uta': 'email' }, "after": "afterSignin", "update_attributes": { "mailing_city": "San Mateo", "mailing_state", "CA" } },
         "signin":           { "event": "signin", "params": { 'ut': 'Paul000001_intid', 'uta': 'integration_id', "first_name": "Paul" } },
         "signout":          { "event": "signout" },
         "optin":            { "event": "optin" },
@@ -109,17 +111,22 @@
 
       <div class="jumbotron">
         <h1>User Identification</h1>
-        <p class="lead">If a user signs in or is otherwise identified, the identifier is stored in the "spot_ut" cookie, and "identify" event is submitted matching the user identifier to the device_token. The user identifier will be used for events instead of device_token. All EDP identity fields are supported, except for "email".</p>
+        <p class="lead">If a user signs in or is otherwise identified, the identifier is stored in the "spot_ut" cookie, and "identify" event is submitted matching the user identifier to the device_token. The user identifier will be used for events instead of device_token. All EDP identity fields are supported, except as noted below.</p>
         <p>
           <a class="btn btn-lg btn-primary" href="#" id="identify" role="button" onclick="">Identify</a>
           <a class="btn btn-lg btn-success" href="#" id="signin" role="button" onclick="">Sign in</a>
         </p>
-        <p class="lead">Email is not supported as an identifier out of respect for user privacy.
-        If an identifier appears to be an email address the cookie will be saved as the string "redacted", 
-        so on subsequent page loads the user will no longer be identified.
+        <p class="lead">Email is not specifically not allowed as an identifier out of respect for user privacy.
+        An identifier that appears to be an email address will not be across the network or stored as a cookie.
         </p>
         <p>
           <a class="btn btn-lg btn-info" href="#" id="email_identify" role="button" onclick="">Email Identify</a>
+        </p>
+        <p class="lead">The Event payload can include attribute values to update, such as "what should we call you?".
+        </p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="#" id="update_name" role="button" onclick="">Update Name</a>
+          <a class="btn btn-lg btn-success" href="#" id="update_address" role="button" onclick="">Update Address</a>
         </p>
         <p class="lead">The user token cookie is cleared (set to "") on a "signout" event.</p>
         <p>
