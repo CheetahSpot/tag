@@ -1,11 +1,12 @@
 /**
- * Spot CD Tag
+ * "Spot" CD Tag
+ * Copyright (c) 2020 Cheetah Digital, inc.
  */
 
 function SpotJs () {
   let version = "0.1.4";
 
-  //@public tag config
+  //@orivate tag config
   let config = {
     apiAuth: null,
     apiHost: null,
@@ -28,8 +29,7 @@ function SpotJs () {
       'spot_ut': 'spot_ut',
       'spot_uta': 'spot_uta',
       'spot_camp_id': 'spot_camp_id' },
-    eventParamKeys: { },
-    useNavigatorBeacon: false // not supported in IE
+    eventParamKeys: { 'sub_type': 'sub_type' }
   };
 
   // Spot Config can be overridden with a javascript variable on the page.
@@ -37,10 +37,10 @@ function SpotJs () {
     Object.assign(config, spot_config);
   }
 
-  // @public user object
-  let user = { dt: null, ut: null, st: null, uta: config.uta, optin: null, dnt: null, update_attributes: {} };
+  // Spot User object
+  let user = { dt: null, ut: null, st: null, uta: config.uta, optin: null, dnt: null };
 
-  // @public return object
+  // @return object
   let spotjs = {
     name: "spotjs "+version,
     config: config,
@@ -50,15 +50,14 @@ function SpotJs () {
     pendingEvents: []
   };
 
-  // logger
+  // @private logger
   let emptyFn = function(){},
       log = config.logLevel ? console.log.bind(window.console) : emptyFn,
       logError = config.logLevel >=1 ? log : emptyFn,
       logInfo  = config.logLevel >=2 ? log : emptyFn,
       logTrace = config.logLevel >=3 ? log : emptyFn;
 
-  // @public push
-  // Helper function to push an event to the data layer
+  // @public push event to data layer
   let push = spotjs.push = function (eventType, params) {
     spotjs.dataLayer.push({ "event": eventType || config.eventType, "params": params });
   }
@@ -80,42 +79,69 @@ function SpotJs () {
       logError("spotjs.setUser error - user object is required", user2);
       return false;
     }
-    if (isPersonal(user2.ut, user2.ut)) {
+    if (redact(user2.uta, user2.ut)) {
       user2.ut = "redacted";
-      logError("spotjs.setUser error - email is not allowed as an identifier", user2);
+      logError("spotjs.setUser error - obvious sensitive info not allowed as identifier");
       return false;
     }
-    logTrace("spotjs.setUser user2 =", JSON.stringify(user2));
+    logTrace("spotjs.setUser applying user2 =", JSON.stringify(user2));
     Object.assign(spotjs.user, user2);
+    logTrace("spotjs.setUser user =", JSON.stringify(user));
     return true;
   }
   
-  // @public Signout
+  // @public Signout - clear user token cookie
   let signOut = spotjs.signout = function () {
-    // clear user token
     user.ut = "";
     user.uta = config.uta;
-    setCookie("ut", "redacted");
-    setCookie("uta", user.uta);
+    setCookie("ut", "");
+    setCookie("uta", "");
   }
 
-  // @public setOptin
+  // @public setOptin - set optin and dnt
   let setOptin = spotjs.setOptin = function (optin) {
     user.optin = optin === 0 ? 0 : 1;
     user.dnt = user.optin === 0 ? 1 : 0;
     setCookie("dnt", user.dnt);
   }
 
-  // Init Data Layer
+  // @private detectUser - load spot_user from querystring or variable
+  let detectUser = function () {
+    let user2 = null,
+        param = null;
+    if (typeof window[config.tagParams.spot_user] !== "undefined") {
+      user2 = window[config.tagParams.spot_user];
+      logTrace("spotjs.detectUser found spot_user variable = ", user2);
+    }
+    if (!user2) {
+      param = getParam(config.tagParams.spot_user, "base64json");
+      if (param) {
+        user2 = param;
+        logTrace("spotjs.detectUser found spot_user querystring param = ", user2);
+      }
+    }
+    if (!user2) {
+      param = getParam(config.tagParams.spot_ut);
+      if (param) {
+        user2 = { ut: param, uta: getParam(config.tagParams.spot_uta) };
+        logTrace("spotjs.detectUser found spot_ut querystring param = ", user2);
+      }
+    }
+    if (typeof user2 === "object") {
+      user2.uta = user2.uta || config.uta;
+      logInfo("spotjs.detectUser user2 = ", user2);
+      setUser(user2);
+      spotjs.pendingEvents.push({ "event": "identify", "params": user2 });
+    }
+  }
+
+  // @private initDataLayer
   let initDataLayer = function () {
     if (!spotjs.dataLayer) {
       spotjs.dataLayer = window[config.dataLayerId] = window[config.dataLayerId] || [];
       while (spotjs.pendingEvents.length) {
         spotjs.dataLayer.push(spotjs.pendingEvents.shift());
       }
-      spotjs.dataLayer.pushSilent = function(e) {
-        Array.prototype.push.call(spotjs.dataLayer, e);
-      };
       spotjs.dataLayer.push = function(e) {
         Array.prototype.push.call(spotjs.dataLayer, e);
         processDataLayer();
@@ -123,42 +149,51 @@ function SpotJs () {
     }
   }
 
-  // Process data layer array
+  // @private processDataLayer
   let processDataLayer = function () {
     logTrace("spotjs.processDataLayer dataLayer =", JSON.stringify(spotjs.dataLayer));
     if (spotjs.dataLayer) {
       while (spotjs.dataLayer.length) {
         let data = spotjs.dataLayer.shift();
-        if (typeof data !== "object" || !data) {
+        logTrace("spotjs.processDataLayer data =", JSON.stringify(data));
+        if (typeof data !== "object") {
           logTrace("spotjs.processDataLayer skipping non-object item", data)
           continue;
         }
         if (data.config && typeof data.config === "object") {
+          logTrace("spotjs.processDataLayer setting config", data.config)
           setConfig(data.config);
         }
         let configError = validateConfig();
         if (configError) {
-          logError("spotjs.processDataLayer exiting due to config error:", configError, config);
+          logError("spotjs.processDataLayer error - exiting due to invalid config:", configError);
           spotjs.pendingEvents.push(data);
           continue;
         }
-        if (data.before && typeof window[data.before] === "function") {
-          let proceed = window[data.before](data);
-          if (!proceed) {
-            if (data.cancel && typeof window[data.cancel] === "function") {
-              window[data.cancel](data);
-              continue;
-            }
-          }
+        let proceed = sandboxFunction(data.before, data);
+        if (proceed === false) {
+          sandboxFunction(data.cancel, data);
+          continue;
         }
         if (data.event) {
           processEvent(data);
         }
-        if (data.after && typeof window[data.after] === "function") {
-          window[data.after](data);
-        }
+        sandboxFunction(data.after, data);
       }
     }
+  }
+
+  // @private sandboxFunction
+  let sandboxFunction = function(fnName, data) {
+    if (fnName && typeof window[fnName] === "function") {
+      try { 
+        return window[fnName](data);
+      }
+      catch (e) {
+        logError("spotjs.sandboxFunction error - function", data.before, " exception", e);
+      }
+    }
+    return null;
   }
 
   // @public setConfig
@@ -167,14 +202,23 @@ function SpotJs () {
       logError("spotjs.setConfig error - config object is required");
     }
     Object.assign(config, config2);
+    logTrace("spotjs.setConfig config2 =", config2);
+    Object.assign(config, config2);
     logTrace("spotjs.setConfig config =", config);
-    // Process pending events
-    while (spotjs.pendingEvents.length) {
-      spotjs.dataLayer.push(spotjs.pendingEvents.shift());
+
+    let configError = validateConfig();
+    if (configError) {
+      logError("spotjs.setConfig error - invalid config:", configError);
+    }
+    else {
+      // Process events waiting for valid config
+      while (spotjs.pendingEvents.length) {
+        spotjs.dataLayer.push(spotjs.pendingEvents.shift());
+      }
     }
   }
 
-  // Validate the current config
+  // @private validateConfig
   let validateConfig = function () {
     if (!config.apiHost) {
       return "error: apiHost is required";
@@ -185,87 +229,49 @@ function SpotJs () {
     return false; // no errors = valid
   }
 
-  // Handle any special event
-  let preprocessEvent = function (data) {
-    let send = true;
-    if (user.dnt === 1) {
-      // do not send events
-      send = false;
-    }
-    if (!data.event) {
-      return;
-    }
-    switch (data.event) {
-      case "identify":
-        identify(data.params);
-        break;
-      case "signin":
-        signIn(data.params);
-        send = true;
-        break;
-      case "signout":
-        signOut();
-        break;
-      case "optin":
-        setOptin(1);
-        send = true;
-        break;
-      case "optout":
-        setOptin(0);
-        break;
-      default:
-        break;
-    }
-    return send;
-  }
 
-  let formatEventParam = function (eventType, key, val) {
-    switch (val) {
-      case "{url}":        return document.location.href;
-      case "{referrer}":   return document.location.href;
-      case "{useragent}":  return navigator.userAgent;
-      default:             return val;
-    }
-  }
-
-  // Process a business event, such as a page visit, add to cart, etc.
+  // @private processEvent - main event handler
   let processEvent = function (data) {
     data = data || {};
     if (!data.event) {
       return;
     }
-    let send = preprocessEvent(data);
-    processCampaign(data);
-    processCookies(data);
-    if (!send) {
-      logInfo("spotjs.processEvent - dnt");
+    processSpecialEvents(data);
+    if (data.send === false) {
+      logInfo("spotjs.processEvent exiting - do not send");
       return;
     }
+    processCookies(data);
+    logTrace("spotjs.processEvent data =", data);
+    if (!data.iso_time) {
+      let dateobj = new Date();
+      data.iso_time = dateobj.toISOString();
+    }
+    // Construct event payload
+    var evt = {};
+    evt.event = {
+      "type": data.event,
+      "sub_type": config.eventSubtype,
+      "iso_time": data.iso_time };
+    try { evt.event.local_tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ }
+    processCampaign(data);
+    evt.campaign = data.campaign;
+    evt.source = config.eventSource;
+    // Event Client
+    evt.client = {}
+    evt.client.identifier = { "id": user.ut, "id_field": user.uta };
+    evt.client[config.dta] = user.dt;
+    evt.client[config.sta] = user.st;
+    evt.client.user_agent = "user_agent_raw : "+navigator.userAgent;
+    // Params JSON
     if (typeof data.params !== "object") {
       data.params = {};
     }
-    logTrace("spotjs.processEvent data =", data);
-    // Construct Event
-    var evt = {
-      "event": { "type": data.event, "sub_type": config.eventSubtype || data.sub_type, "iso_time": data.iso_time },
-      "campaign": data.campaign,
-      "client": { "identifier": { "id": user.ut, "id_field": user.uta }, user_agent: "user_agent_raw : "+navigator.userAgent },
-      "source": spotjs.eventSource
-    };
-    try { evt.client.event.local_tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ }
-    evt.client.identifier[config.dta] = user.dt; // TODO - finalize location in api signature
-    evt.client.identifier[config.sta] = user.st; // TODO - finalize location in api signature
-    //evt.event.web_event_url_referrer = data.params.referrer || document.referrer;
-    //evt.link = { "url": data.params.url || document.location.href };
-    if (!evt.event.iso_time) {
-      let dateobj = new Date();
-      evt.event.iso_time = dateobj.toISOString();
-    }
-    // Copy known params to top-level Object, and submit others as params_json
     let params_json = {};
     for (const key of Object.keys(data.params)) {
       let val = formatEventParam(evt.event, key, data.params[key]);
       if (config.eventParamKeys[key] !== undefined) {
+        // set known params on event object
         evt.event[config.eventParamKeys[key]] = val;
       }
       else {
@@ -274,11 +280,10 @@ function SpotJs () {
         evt.params_json = params_json;
       }
     }
-    // Update attributes
+    // Update Attributes
     let update_attributes = data.update_attributes || {};
-    Object.apply(update_attributes, user.update_attributes);
-    // Anonymous
-    if (!evt.client.identifier.id || isPersonal(evt.client.identifier.id_field, evt.client.identifier.id)) {
+    // Set Visitor for anonymous
+    if (!evt.client.identifier.id || redact(evt.client.identifier.id_field, evt.client.identifier.id)) {
       evt.client.identifier.id = user.dt;
       evt.client.identifier.id_field = config.dta;
       update_attributes.visitor = true;
@@ -291,67 +296,56 @@ function SpotJs () {
     sendEvent(evt);
   }
 
+  // @private sendEvent - xhr transport
   let sendEvent = function (evt) {
-    logTrace("spotjs.sendEvent evt =", evt);
-    if (config.useNavigatorBeacon && navigator.sendBeacon) {
-      let blob = new Blob(JSON.stringify(evt), { "type": config.apiContentType });
-      navigator.sendBeacon(config.apiHost + config.apiEndpoint, blob);
+    let xhr = new XMLHttpRequest();
+    let evtId = evt.event.event+"-event-"+spotjs.sentEvents.length;
+    logTrace("spotjs.sendEvent evtId =", evtId, " evt =", evt);
+    spotjs.sentEvents.push({ "id": evtId, "evt": evt, "xhr": xhr });
+    xhr.withCredentials = true;
+    xhr.open("POST", config.apiHost+config.apiEndpoint, true);
+    xhr.setRequestHeader("Content-Type", config.apiContentType);
+    xhr.setRequestHeader("Authorization", config.apiAuth);
+    xhr.addEventListener("readystatechange", function() {
+      if(this.readyState === 4) {
+        logInfo("spotjs.sendEvent", evtId, "completed =", this.responseText);
+      }
+    });
+    let xhrBody = JSON.stringify(evt);
+    logInfo("spotjs.sendEvent", evtId, "sending =", xhrBody);
+    xhr.send(xhrBody);
+  }
+
+  // @private processSpecialEvents
+  let processSpecialEvents = function (data) {
+    if (!data.event) {
+      return;
     }
-    else {
-      let xhr = new XMLHttpRequest();
-      let evtId = evt.event.event+"-event-"+spotjs.sentEvents.length;
-      let sentEvent = { "id": evtId, "evt": evt, "xhr": xhr };
-      spotjs.sentEvents.push(sentEvent);
-      xhr.withCredentials = true;
-      xhr.open("POST", config.apiHost+config.apiEndpoint, true);
-      xhr.setRequestHeader("Content-Type", config.apiContentType);
-      xhr.setRequestHeader("Authorization", config.apiAuth);
-      xhr.addEventListener("readystatechange", function() {
-        if(this.readyState === 4) {
-          logInfo("spotjs", evtId, "completed =", this.responseText);
-        }
-      });
-      let xhrBody = JSON.stringify(evt);
-      logInfo("spotjs", evtId, "sending =", xhrBody);
-      xhr.send(xhrBody);
+    data.send = user.dnt !== 1;
+    switch (data.event) {
+      case "identify":
+        identify(data.params);
+        break;
+      case "signin":
+        signIn(data.params);
+        data.send = true;
+        break;
+      case "signout":
+        signOut();
+        break;
+      case "optin":
+        setOptin(1);
+        data.send = true;
+        break;
+      case "optout":
+        setOptin(0);
+        break;
+      default:
+        break;
     }
   }
 
-  // Load the user from querystring or inline variable
-  let detectUser = function () {
-    let user2 = null;
-    if (typeof window[config.tagParams.spot_user] !== "undefined") {
-      user2 = window[config.tagParams.spot_user];
-      logTrace("spotjs spot_user variable = ", user2);
-    }
-    if (!user2) {
-      let param = getParam(config.tagParams.spot_user);
-      if (param) {
-        if (param.indexOf("{") !== 0) {
-          param = atob(param);
-        }
-        user2 = JSON.parse(param);
-        logTrace("spotjs ?spot_user="+config.tagParams.spot_user+" = ", user2);
-      }
-    }
-    if (!user2) {
-      let param = getParam(config.tagParams.spot_ut);
-      if (param) {
-        user2 = { ut: param, uta: getParam(config.tagParams.spot_uta) };
-        logTrace("spotjs ?spot_ut = ", user2);
-      }
-    }
-    if (user2) {
-      if (user2.ut && !user2.uta) {
-        // Assume user_token is the default attribute
-        user2.uta = config.uta;
-      }
-      logInfo("spotjs.detectUser identity user2 = ", user2);
-      setUser(user2);
-      spotjs.pendingEvents.push({ "event": "identify", "params": user2 });
-    }
-  }
-
+  // @private processCampaign
   let processCampaign = function (data) {
     data.campaign = data.campaign || config.defaultCampaign;
     if (data.campaign.camp_id === config.defaultCampaign.camp_id) {
@@ -360,19 +354,19 @@ function SpotJs () {
         data.campaign.camp_id = param;
       }
     }
-    //user.campaign = JSON.stringify(data.campaign);
   }
 
+  // @private processCookies
   let processCookies = function (data) {
-    getUserCookie("dt", "{uuidv4}", data);
-    getUserCookie("ut", "", data);
-    getUserCookie("uta", config.uta, data);
-    getUserCookie("st", "{uuidv4}", data, { cookieMaxAge: config.sessionLength });
-    //getUserCookie("campaign", "", data, { cookieMaxAge: config.sessionLength });
-    getUserCookie("dnt", null, data);
+    processCookie("dt", "{uuidv4}", data);
+    processCookie("ut", null, data);
+    processCookie("uta", config.uta, data);
+    processCookie("st", "{uuidv4}", data, { cookieMaxAge: config.sessionLength });
+    processCookie("dnt", null, data);
   }
 
-  let getUserCookie = function (key, defaultVal, data, options) {
+  // @private processCookie
+  let processCookie = function (key, defaultVal, data, options) {
     let cookieVal = getCookie(key);
     if (user[key] === undefined || user[key] === null) {
       if (data[key] !== undefined) {
@@ -381,62 +375,82 @@ function SpotJs () {
       else if (cookieVal) {
         user[key] = cookieVal;
       }
-      if (!user[key] && defaultVal) {
+      if (user[key] === undefined || user[key] === null) {
         if (defaultVal === "{uuidv4}") {
           user[key] = uuidv4();
         }
-        else {
+        else if (defaultVal !== null) {
           user[key] = defaultVal;
         }
       }
     }
-    let cookieVal2 = user[key];
-    // Save the value as a cookie, but only if necessary
-    if (cookieVal2 !== undefined && cookieVal2 !== cookieVal) { // && (cookieVal2 !== defaultVal && !cookieVal)) 
-      setCookie(key, cookieVal2, options);
-    }
+    setCookie(key, user[key], options);
   }
 
+  // @private getCookie
   let getCookie = function (name) {
     var v = document.cookie.match('(^|;) ?'+config.cookiePrefix+name+'=([^;]*)(;|$)');
     let v2 = v ? v[2] : null;
-    if (v2 === "null" || v2 === "redacted") {
-      v2 = null;
-    }
+    if (v2 === "" || v2 === "null" || v2 === "redacted") { v2 = null; }
     return v2;
   }
-
+  
+  // @private setCookie
   let setCookie = function (name, value, options) {
-    options = options || config;
-    if (isPersonal(name, value)) {
+    if (value === undefined || value === null) { return; }
+    options = options || {};
+    options.cookieMaxAge = options.cookieMaxAge || config.cookieMaxAge;
+    if (redact(name, value)) {
       value = "redacted";
     }
-    let c = config.cookiePrefix+name+'='+value;
-    c += '; SameSite=None';
-    c += '; Secure=true';
-    c += '; Max-Age='+options.cookieMaxAge;
-    c += "; Path=/";
-    document.cookie = c;
+    let c = config.cookiePrefix+name+'='+value+'; SameSite=None; Secure=true; Max-Age='+options.cookieMaxAge+';  Path=/;';
     logTrace("spotjs.setCookie c=", c);
+    document.cookie = c;
   }
 
-  // Detect if a value looks like personal info
-  let isPersonal = function (name, val) {
-    // look for possible email address
-    return name === 'email' || /^.+@.+\..+$/.test(val);
+  // @private redact - do not use obviously sensitive info
+  let redact = function (name, val) {
+    if (name === 'email' || /^.+@.+\..+$/.test(val)) {
+      return 'email';
+    }
+    return false;
   }
- 
-  // get a querystring parameter by name
-  let getParam = function (name, url) {
-    if (!url) { url = window.location.href; }
+
+  // @private formatEventParam
+  let formatEventParam = function (eventType, key, val) {
+    if (redact(key, val)) {
+      return 'redacted';
+    }
+    switch (val) {
+      case "{url}":        return document.location.href;
+      case "{referrer}":   return document.location.href;
+      case "{useragent}":  return navigator.userAgent;
+      default:             return val;
+    }
+  }
+
+  // @private getParam from querystring
+  let getParam = function (name, format) {
+    let url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
         results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    let val = decodeURIComponent(results[2].replace(/\+/g, ' '));
+    if (val && format === "base64json") {
+      try {
+        if (val.indexOf("{") !== 0) { val = atob(val) }
+        val = JSON.parse(val);
+      }
+      catch (e) {
+        logError("spotjs.getParam could not parse querystring param = ", name, " as", format);
+      }
+    }
+    return val;
   }
 
+  // @private uuidv4
   let uuidv4 = function () {
    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -444,6 +458,7 @@ function SpotJs () {
     });
   }
 
+  spotjs.instance = uuidv4();
   // Detect user state prior to processing any events
   detectUser();
   // Init the array of events to process
@@ -451,7 +466,6 @@ function SpotJs () {
   // Finally, process any existing events
   processDataLayer();
 
-  spotjs.instance = uuidv4();
   logInfo(spotjs.name, "ready", spotjs.instance);
   return spotjs;
 }
