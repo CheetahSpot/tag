@@ -127,7 +127,7 @@ function SpotJs () {
         logTrace("spotjs.detectUser found spot_ut querystring param = ", user2);
       }
     }
-    if (typeof user2 === "object") {
+    if (user2 && typeof user2 === "object") {
       if (!user2.uta) { user2.uta = config.uta; }
       logInfo("spotjs.detectUser user2 = ", user2);
       setUser(user2);
