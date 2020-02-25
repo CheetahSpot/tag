@@ -128,7 +128,7 @@ function SpotJs () {
       }
     }
     if (typeof user2 === "object") {
-      if (!user2.uta) { user2.uta =config.uta; }
+      if (!user2.uta) { user2.uta = config.uta; }
       logInfo("spotjs.detectUser user2 = ", user2);
       setUser(user2);
       spotjs.pendingEvents.push({ "event": "identify", "params": user2 });
