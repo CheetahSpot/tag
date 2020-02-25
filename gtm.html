@@ -62,7 +62,7 @@
         <p class="lead">Spot also generates a random UUID session_token for the browsing session.
         The cookie max age is set to the Spot sessionLength config setting, which defaults to 30 minutes. </p>
         <p class="lead">You can use Spot to submit an Event such as "visit web page", by pushing the event to the data layer:</p>
-        <code>spot_data.push({ "event":"visit_web_page", params: { url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code>
+        <code>spot_data.push({ "event":"visit_web_page", params: { url: "{url}", referrer: "{referrer}", user_agent: "{useragent}"} })</code><br>
         <code>spot_data.push({ "event":"browse_product", params: { url: "{url}", items: [ "162224", "118423" ]} })</code>
         <p class="lead">All Events submitted include the device_token and session_token.</p>
         <p class="lead">Spot does not automatically submit any events, only those you create.</p>
