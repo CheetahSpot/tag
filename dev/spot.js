@@ -299,7 +299,7 @@ function SpotJs () {
     let evtId = evt.event.type+"-"+spotjs.sentEvents.length;
     logTrace("spotjs.sendEvent evtId =", evtId, " evt =", evt);
     spotjs.sentEvents.push({ "id": evtId, "evt": evt, "xhr": xhr });
-    xhr.withCredentials = true;
+    //xhr.withCredentials = true;
     xhr.open("POST", config.apiHost+config.apiEndpoint, true);
     xhr.setRequestHeader("Content-Type", config.apiContentType);
     xhr.setRequestHeader("Authorization", config.apiAuth);
