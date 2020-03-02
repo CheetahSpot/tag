@@ -11,6 +11,29 @@
     })(window,document,'script','dataLayer','GTM-KDBNM2C');</script>
     <!-- End Google Tag Manager --> 
 
+      
+  <script>
+    // Cancel demo button clicks
+    document.addEventListener(
+        "click",
+        (event) => {
+
+            if (event.target.matches(".btn")) {
+
+                event.preventDefault()
+                console.log(
+                    "custom button click id =",
+                    event.target.id,
+                    event.target
+                )
+            }
+
+        },
+        false
+    )
+
+  </script>
+
 
     <!-- make the page look nice -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -31,10 +54,10 @@
               <a class="nav-link" href="index.html">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="gtm.html">GTM</a>
+              <a class="nav-link active" href="gtm.html">GTM</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="inline.html">Inline</a>
+              <a class="nav-link" href="inline.html">Inline</a>
             </li>
           </ul>
         </nav>
