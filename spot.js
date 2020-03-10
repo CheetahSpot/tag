@@ -11,7 +11,6 @@ function SpotJs () {
     apiAuth: null,
     apiHost: null,
     apiEndpoint: '/edp/api/event',
-    apiContentType: 'application/json',
     defaultCampaign: { "camp_id": "0", "ext_parent_id": "0" },
     eventType: 'tag',
     eventSubtype: 'tag',
@@ -301,7 +300,6 @@ function SpotJs () {
     spotjs.sentEvents.push({ "id": evtId, "evt": evt, "xhr": xhr });
     //xhr.withCredentials = true;
     xhr.open("POST", config.apiHost+config.apiEndpoint, true);
-    xhr.setRequestHeader("Content-Type", config.apiContentType);
     xhr.setRequestHeader("Authorization", config.apiAuth);
     xhr.addEventListener("readystatechange", function() {
       if(this.readyState === 4) {
