@@ -301,6 +301,7 @@ function SpotJs () {
     //xhr.withCredentials = true;
     xhr.open("POST", config.apiHost+config.apiEndpoint, true);
     xhr.setRequestHeader("Authorization", config.apiAuth);
+    xhr.setRequestHeader("Content-Type", "application/json")
     xhr.addEventListener("readystatechange", function() {
       if(this.readyState === 4) {
         logInfo("spotjs.sendEvent", evtId, "completed =", this.responseText);
