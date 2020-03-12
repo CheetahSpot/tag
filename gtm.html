@@ -32,6 +32,24 @@
         false
     )
 
+    function showOfferLoading() {
+
+      console.log("showOfferLoading");
+      $("#offer_display").html("Loading...");
+      
+    }
+    function showOffer(offer) {
+
+      console.log("showOffer", offer);
+      if (offer) {
+        if (!offer.html) {
+          offer.html = '<img src="'+offer.image_url+'" style="height: 200px;" /><h2>'+offer.heading+'</h3><h4>'+offer.subheading+'</h4><p>'+offer.body+'</p>';
+        }
+        $("#offer_display").html(offer.html);
+      }
+
+    }
+
   </script>
 
 
@@ -146,6 +164,18 @@
           <a class="btn btn-lg btn-warning" href="#" id="remove_from_cart" role="button">Remove from Cart</a>
           <a class="btn btn-lg btn-success" href="#" id="cart_checkout" role="button">Checkout</a>
         </p>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Offers</h1>
+        <p class="lead">Submit events to get Loyalty Offers.
+          The event callback functions "before", "after", and "cancel" apply to Offer display.
+        </p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="#" id="offer" role="button">Get Offer</a>
+          <a class="btn btn-lg btn-info" href="#" id="offer_placement" role="button">Get Offer from Placement</a>
+        </p>
+        <div id="offer_display">(Offer will display here)</div>
       </div>
 
       <div class="jumbotron">

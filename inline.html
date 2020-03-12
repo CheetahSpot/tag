@@ -36,7 +36,9 @@
         "signin":           { "event": "signin", "params": { 'ut': 'Paul000001_intid', 'uta': 'integration_id', "first_name": "Paul" } },
         "signout":          { "event": "signout" },
         "optin":            { "event": "optin" },
-        "optout":           { "event": "optout" }
+        "optout":           { "event": "optout" },
+        "offer": { "event": "offer", "before": "showOfferLoading", "after": "showOffer" },
+        "offer_placement": { "event": "offer", "params": { "placement": "web" }, "before": "showOfferLoading", "after": "showOffer" }
       }
 
       function afterRemoveFromCart (data) { alert("item removed"); }
@@ -45,6 +47,23 @@
       function cancelCartCheckout (data) { alert("items will remain in your cart for 24 hours") }
       function afterSignin (data) { alert("Welcome!") }
       function afterUpdateName (data) { alert("Welcome"+data.update_attributes.first_name+"!") }
+      function showOfferLoading() {
+
+        console.log("showOfferLoading");
+        $("#offer_display").html("Loading...");
+        
+      }
+      function showOffer(offer) {
+
+        console.log("showOffer", offer);
+        if (offer) {
+          if (!offer.html) {
+            offer.html = '<img src="'+offer.image_url+'" style="height: 200px;" /><h2>'+offer.heading+'</h3><h4>'+offer.subheading+'</h4><p>'+offer.body+'</p>';
+          }
+          $("#offer_display").html(offer.html);
+        }
+
+      }
 
       // Trigger on button click
       document.addEventListener('click', function (event) {
@@ -188,6 +207,18 @@
         Tracking is enabled by default.
         An optin or optout Event out sets a Do Not Track cookie "spot_dnt".  Optin sets "spot_dnt=0", and Optout sets "spot_dnt=1".  </p>
         <p>If Do Not Track is enabled ("spot_dnt=1") Events are blocked and not sent to the server. Optin/optout does not affect other cookies.  </p>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Offers</h1>
+        <p class="lead">Submit events to get Loyalty Offers.
+          The event callback functions "before", "after", and "cancel" apply to Offer display.
+        </p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="#" id="offer" role="button">Get Offer</a>
+          <a class="btn btn-lg btn-info" href="#" id="offer_placement" role="button">Get Offer from Placement</a>
+        </p>
+        <div id="offer_display">(Offer will display here)</div>
       </div>
 
       <div class="jumbotron">
