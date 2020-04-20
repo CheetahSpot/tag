@@ -122,8 +122,8 @@ function SpotJs() {
 
       }
 
-      cleanEmpty(user2.uta)
-      cleanEmpty(user2.ut)
+      user2.uta = cleanEmpty(user2.uta)
+      user2.ut = cleanEmpty(user2.ut)
 
       if (redact(
           user2.uta,
